@@ -1,6 +1,6 @@
 # Alto
 
-A polished single-page landing demo for take-home style interviews. Built with **Next.js**, **TypeScript**, **Tailwind CSS**, and **shadcn/ui**.
+A polished single-page landing demo for take-home style interviews. Built with **Next.js**, **TypeScript**, and **Uber Base Web** (Styletron).
 
 Alto shows brand-first hero craft, intentional motion, and a waitlist form with idle, loading, error, and success states — no auth, database, or backend services.
 
@@ -33,21 +33,9 @@ npx vercel git connect   # attach the GitHub repo for auto-deploys
 npx vercel --prod        # production deploy
 ```
 
-After the first production deploy, the public URL looks like:
+Live production URL:
 
-`https://<project-name>.vercel.app`
-
-(Document the exact URL here once live.)
-
-### Temporary anonymous deploy
-
-Without Vercel auth, you can still smoke-test with:
-
-```bash
-npx vercel deploy --temporary --yes --prod
-```
-
-Anonymous deploys expire quickly and must be [claimed](https://vercel.com/docs/cli/deploying-from-cli) to keep. Prefer linking the GitHub repo for a lasting reviewer URL.
+`https://express-mercury-e5hudzp.vercel.app`
 
 ## Scripts
 
@@ -61,6 +49,5 @@ Anonymous deploys expire quickly and must be [claimed](https://vercel.com/docs/c
 ## Stack
 
 - Next.js (App Router) + React + TypeScript
-- Tailwind CSS v4
-- shadcn/ui (Button, Input)
+- Uber Base Web (`baseui`) + Styletron (SSR via `useServerInsertedHTML`)
 - Google fonts: Syne (display) + Figtree (body)

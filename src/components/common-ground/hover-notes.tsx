@@ -8,9 +8,9 @@ const NOTES: Record<string, { title: string; body: string }> = {
     title: "Why events look like this",
     body: "Photo + interest + relative date + virtual label: she recognizes the activity before she commits. Assumption: shared interests + no travel. Good bet because the barrier is getting there — we can ship a local catalog with filters, not a venue network.",
   },
-  "nav-chats": {
-    title: "Why chat exists",
-    body: "Familiarity after an event can become a relationship. Not a big social network — a quiet follow-up with someone she already met. Ties to meaningful relationships over follower counts.",
+  "nav-circle": {
+    title: "Why My Circle exists",
+    body: "Familiar faces, the next weekly gathering, and “I’ll be there” as the reconnection loop — saying yes to next week builds a relationship, not a social graph. Engineering: one screen, local state. Business: recurring attendance → retention.",
   },
   "nav-profile": {
     title: "Why profile shows interests",

@@ -8,7 +8,7 @@ type Props = {
   screen: AppScreen;
   onFeed: () => void;
   onUpcoming: () => void;
-  onChats: () => void;
+  onCircle: () => void;
   onProfile: () => void;
 };
 
@@ -46,15 +46,38 @@ function IconUpcoming() {
   );
 }
 
-function IconChats() {
+function IconCircle() {
   return (
     <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden>
-      <path
-        d="M4 5.5h14a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9l-4 3v-3H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z"
+      <circle
+        cx="8"
+        cy="8"
+        r="3"
         fill="none"
         stroke="currentColor"
         strokeWidth="1.8"
-        strokeLinejoin="round"
+      />
+      <circle
+        cx="15"
+        cy="9"
+        r="2.6"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+      />
+      <path
+        d="M2.5 18c1.2-2.8 3.4-4.2 5.5-4.2S12.3 15.2 13.5 18"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
+      <path
+        d="M13 14.2c1.6.2 3.1 1.3 4.2 3.8"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
       />
     </svg>
   );
@@ -86,7 +109,7 @@ export function BottomNav({
   screen,
   onFeed,
   onUpcoming,
-  onChats,
+  onCircle,
   onProfile,
 }: Props) {
   const [css, theme] = useStyletron();
@@ -110,7 +133,7 @@ export function BottomNav({
         border: "none",
         background: "transparent",
         color: active ? theme.colors.accent : theme.colors.contentSecondary,
-        fontSize: "12px",
+        fontSize: "11px",
         fontWeight: 700,
         cursor: "pointer",
         fontFamily: theme.typography.LabelMedium.fontFamily,
@@ -145,11 +168,11 @@ export function BottomNav({
       {item("Feed", screen === "feed", onFeed, <IconFeed />)}
       {item("Upcoming", screen === "upcoming", onUpcoming, <IconUpcoming />)}
       {item(
-        "Chats",
-        screen === "chats" || screen === "chat-thread",
-        onChats,
-        <IconChats />,
-        "nav-chats",
+        "My Circle",
+        screen === "circle",
+        onCircle,
+        <IconCircle />,
+        "nav-circle",
       )}
       {item(
         "Profile",

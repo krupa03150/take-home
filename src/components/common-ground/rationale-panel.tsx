@@ -23,8 +23,8 @@ const features = [
     why: "Joined events for Today/Tomorrow = recurring time she can plan. Small feature, big return habit.",
   },
   {
-    title: "Chats",
-    why: "Familiar faces after an event become a relationship — not a social graph. Thin MVP threads, high meaning.",
+    title: "My Circle",
+    why: "Familiar faces + next weekly gathering + “I’ll be there.” Assumption: saying yes to next week builds a relationship, not a social graph. Engineering: one screen, local state. Business: recurring attendance → retention.",
   },
   {
     title: "Profile + interests",

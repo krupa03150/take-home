@@ -197,9 +197,11 @@ export function HomePage() {
             <Block maxWidth="40rem">
               <HeadingLevel>
                 <p
+                  data-alto-typeface="UberMove"
                   className={`animate-rise ${css({
                     margin: 0,
-                    fontFamily: theme.typography.DisplayLarge.fontFamily,
+                    fontFamily:
+                      'UberMove, UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial, sans-serif',
                     fontSize: "clamp(3rem, 10vw, 6rem)",
                     fontWeight: 700,
                     letterSpacing: "-0.035em",

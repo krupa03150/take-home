@@ -19,7 +19,7 @@ body {
   background: #ffffff;
   color: #000000;
   font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+    sans-serif !important;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
@@ -31,7 +31,7 @@ h4,
 h5,
 h6 {
   font-family: UberMove, UberMoveText, system-ui, "Helvetica Neue", Helvetica,
-    Arial, sans-serif;
+    Arial, sans-serif !important;
 }
 
 .h-full {

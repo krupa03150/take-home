@@ -50,4 +50,4 @@ Live production URL:
 
 - Next.js (App Router) + React + TypeScript
 - Uber Base Web (`baseui`) + Styletron (SSR via `useServerInsertedHTML`)
-- `LightThemeMove` typography: Uber Move / Uber Move Text (official Base Web CDN `@font-face`)
+- `LightThemeMove` typography: Uber Move / Uber Move Text (self-hosted in `public/fonts/`)

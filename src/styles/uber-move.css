@@ -1,80 +1,92 @@
+/* Self-hosted Uber Move / Move Text (official Base Web CDN originals).
+   Served from /fonts so faces load same-origin even if CloudFront is blocked. */
+
 @font-face {
-  font-family: 'UberMove';
-  src: url('https://d1a3f4spazzrp4.cloudfront.net/dotcom-assets/fonts/UberMove-Light.woff2')
-      format('woff2'),
-    url('https://d1a3f4spazzrp4.cloudfront.net/dotcom-assets/fonts/UberMove-Light.woff')
-      format('woff');
+  font-family: "UberMove";
+  src: url("/fonts/UberMove-Light.woff2") format("woff2"),
+    url("/fonts/UberMove-Light.woff") format("woff");
   font-weight: 200;
   font-style: normal;
   font-display: swap;
 }
+
 @font-face {
-  font-family: 'UberMove';
-  src: url('https://d1a3f4spazzrp4.cloudfront.net/dotcom-assets/fonts/UberMove-Regular.woff2')
-      format('woff2'),
-    url('https://d1a3f4spazzrp4.cloudfront.net/dotcom-assets/fonts/UberMove-Regular.woff')
-      format('woff');
+  font-family: "UberMove";
+  src: url("/fonts/UberMove-Regular.woff2") format("woff2"),
+    url("/fonts/UberMove-Regular.woff") format("woff");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
+
 @font-face {
-  font-family: 'UberMove';
-  src: url('https://d1a3f4spazzrp4.cloudfront.net/dotcom-assets/fonts/UberMove-Medium.woff2')
-      format('woff2'),
-    url('https://d1a3f4spazzrp4.cloudfront.net/dotcom-assets/fonts/UberMove-Medium.woff')
-      format('woff');
+  font-family: "UberMove";
+  src: url("/fonts/UberMove-Medium.woff2") format("woff2"),
+    url("/fonts/UberMove-Medium.woff") format("woff");
   font-weight: 500;
   font-style: normal;
   font-display: swap;
 }
+
 @font-face {
-  font-family: 'UberMove';
-  src: url('https://d1a3f4spazzrp4.cloudfront.net/dotcom-assets/fonts/UberMove-Bold.woff2')
-      format('woff2'),
-    url('https://d1a3f4spazzrp4.cloudfront.net/dotcom-assets/fonts/UberMove-Bold.woff')
-      format('woff');
+  font-family: "UberMove";
+  src: url("/fonts/UberMove-Bold.woff2") format("woff2"),
+    url("/fonts/UberMove-Bold.woff") format("woff");
   font-weight: 600;
   font-style: normal;
   font-display: swap;
 }
+
 @font-face {
-  font-family: 'UberMoveText';
-  src: url('https://d1a3f4spazzrp4.cloudfront.net/dotcom-assets/fonts/UberMoveText-Light.woff2')
-      format('woff2'),
-    url('https://d1a3f4spazzrp4.cloudfront.net/dotcom-assets/fonts/UberMoveText-Light.woff')
-      format('woff');
+  font-family: "UberMove";
+  src: url("/fonts/UberMove-Bold.woff2") format("woff2"),
+    url("/fonts/UberMove-Bold.woff") format("woff");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "UberMoveText";
+  src: url("/fonts/UberMoveText-Light.woff2") format("woff2"),
+    url("/fonts/UberMoveText-Light.woff") format("woff");
   font-weight: 200;
   font-style: normal;
   font-display: swap;
 }
+
 @font-face {
-  font-family: 'UberMoveText';
-  src: url('https://d1a3f4spazzrp4.cloudfront.net/dotcom-assets/fonts/UberMoveText-Regular.woff2')
-      format('woff2'),
-    url('https://d1a3f4spazzrp4.cloudfront.net/dotcom-assets/fonts/UberMoveText-Regular.woff')
-      format('woff');
+  font-family: "UberMoveText";
+  src: url("/fonts/UberMoveText-Regular.woff2") format("woff2"),
+    url("/fonts/UberMoveText-Regular.woff") format("woff");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
+
 @font-face {
-  font-family: 'UberMoveText';
-  src: url('https://d1a3f4spazzrp4.cloudfront.net/dotcom-assets/fonts/UberMoveText-Medium.woff2')
-      format('woff2'),
-    url('https://d1a3f4spazzrp4.cloudfront.net/dotcom-assets/fonts/UberMoveText-Medium.woff')
-      format('woff');
+  font-family: "UberMoveText";
+  src: url("/fonts/UberMoveText-Medium.woff2") format("woff2"),
+    url("/fonts/UberMoveText-Medium.woff") format("woff");
   font-weight: 500;
   font-style: normal;
   font-display: swap;
 }
+
 @font-face {
-  font-family: 'UberMoveText';
-  src: url('https://d1a3f4spazzrp4.cloudfront.net/dotcom-assets/fonts/UberMoveText-Bold.woff2')
-      format('woff2'),
-    url('https://d1a3f4spazzrp4.cloudfront.net/dotcom-assets/fonts/UberMoveText-Bold.woff')
-      format('woff');
+  font-family: "UberMoveText";
+  src: url("/fonts/UberMoveText-Bold.woff2") format("woff2"),
+    url("/fonts/UberMoveText-Bold.woff") format("woff");
   font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "UberMoveText";
+  src: url("/fonts/UberMoveText-Bold.woff2") format("woff2"),
+    url("/fonts/UberMoveText-Bold.woff") format("woff");
+  font-weight: 700;
   font-style: normal;
   font-display: swap;
 }

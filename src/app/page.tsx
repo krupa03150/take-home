@@ -1,5 +1,5 @@
-import { HomePage } from "@/components/home-page";
+import { CommonGroundApp } from "@/components/common-ground/app";
 
 export default function Home() {
-  return <HomePage />;
+  return <CommonGroundApp />;
 }

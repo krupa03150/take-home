@@ -1,72 +1,43 @@
 "use client";
 
-import { useMemo, useState, type ReactNode } from "react";
-import { useServerInsertedHTML } from "next/navigation";
+import { useEffect, useState, type ReactNode } from "react";
 import { Provider as StyletronProvider } from "styletron-react";
-import { Client as StyletronClient, Server as StyletronServer } from "styletron-engine-monolithic";
+import { Client as StyletronClient } from "styletron-engine-monolithic";
 
-const HYDRATE_CLASS = "_styletron_hydrate_";
-const CONTAINER_ID = "_styletron_container_";
-
-type StyletronEngine = StyletronClient | StyletronServer;
-
-function createEngine(): StyletronEngine {
-  if (typeof window === "undefined") {
-    return new StyletronServer();
-  }
-
-  const oldContainer = document.getElementById(CONTAINER_ID);
-  const container = document.createElement("style");
-  container.id = CONTAINER_ID;
-  document.head.appendChild(container);
-
-  const hydrateElements = document.getElementsByClassName(
-    HYDRATE_CLASS
-  ) as HTMLCollectionOf<HTMLStyleElement>;
-
-  // Next can occasionally insert hydration styles into body on client navigations.
-  if (hydrateElements.length > 1) {
-    for (let i = hydrateElements.length - 1; i >= 0; i -= 1) {
-      if (hydrateElements[i].parentNode === document.body) {
-        hydrateElements[i].remove();
-      }
-    }
-  }
-
-  const client = new StyletronClient({
-    hydrate: hydrateElements,
-    container,
-  });
-
-  oldContainer?.remove();
-  return client;
-}
-
+/**
+ * Client-only Styletron. Next 16 / React 19 was hydrating a StyletronServer
+ * instance into the browser (useState initializer from SSR), so classNames
+ * were emitted but CSS never injected into the document.
+ */
 export function StyletronRegistry({ children }: { children: ReactNode }) {
-  const [engine] = useState(createEngine);
-  // Keep a stable reference across renders for SSR stylesheet extraction.
-  const styletron = useMemo(() => engine, [engine]);
+  const [engine, setEngine] = useState<StyletronClient | null>(null);
 
-  useServerInsertedHTML(() => {
-    if (!("getStylesheets" in styletron)) {
-      return null;
-    }
+  useEffect(() => {
+    const client = new StyletronClient({
+      // Prefer readable style tags over CSSOM-only speedy inserts for reliability.
+      speedy: false,
+    });
+    setEngine(client);
+  }, []);
 
-    const stylesheets = styletron.getStylesheets() ?? [];
+  if (!engine) {
     return (
-      <>
-        {stylesheets.map((sheet, index) => (
-          <style
-            key={index}
-            className={HYDRATE_CLASS}
-            dangerouslySetInnerHTML={{ __html: sheet.css }}
-            media={sheet.attrs.media}
-            data-hydrate={sheet.attrs["data-hydrate"]}
-          />
-        ))}
-      </>
+      <div
+        style={{
+          minHeight: "100dvh",
+          display: "grid",
+          placeItems: "center",
+          background: "#F3EDE4",
+          color: "#2A2420",
+          fontFamily:
+            'UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial, sans-serif',
+          fontSize: 17,
+        }}
+      >
+        Loading Common Ground…
+      </div>
     );
-  });
+  }
 
-  return <StyletronProvider value={styletron}>{children}</StyletronProvider>;
+  return <StyletronProvider value={engine}>{children}</StyletronProvider>;
 }

@@ -1,8 +1,8 @@
-# Alto
+# Common Ground
 
-A polished single-page landing demo for take-home style interviews. Built with **Next.js**, **TypeScript**, and **Uber Base Web** (Styletron).
+Mobile-first take-home: an iPhone app experience for finding **recurring interest circles** so belonging compounds through familiar faces.
 
-Alto shows brand-first hero craft, intentional motion, and a waitlist form with idle, loading, error, and success states — no auth, database, or backend services.
+Built with **Next.js**, **Uber Base Web** (Styletron), and **Uber Move** typography, themed warm and approachable via `createLightTheme`.
 
 ## Run locally
 
@@ -11,43 +11,29 @@ npm install
 npm run dev
 ```
 
-Dev server binds to [http://127.0.0.1:43127](http://127.0.0.1:43127).
+Dev server: [http://127.0.0.1:43127](http://127.0.0.1:43127)
 
-## Deploy on Vercel
-
-Next.js works with Vercel defaults — no `vercel.json` required.
-
-### Production deploy (recommended)
-
-1. Push this repo to GitHub (`https://github.com/krupa03150/take-home`).
-2. In [Vercel](https://vercel.com/new): **Add New… → Project → Import** `krupa03150/take-home`.
-3. Leave Framework Preset as **Next.js**, then **Deploy**.
-4. Turn on automatic deployments for `main` (and optionally preview deploys for PRs).
-
-CLI alternative (requires a logged-in Vercel account or `VERCEL_TOKEN`):
+Optional durable supervisor (survives shell exit):
 
 ```bash
-npx vercel login
-npx vercel link          # create/link project
-npx vercel git connect   # attach the GitHub repo for auto-deploys
-npx vercel --prod        # production deploy
+python3 scripts/daemonize-dev-43127.py
 ```
 
-Live production URL:
+## Product flow (in the phone)
 
-`https://express-mercury-e5hudzp.vercel.app`
+1. **Explore** — discovery feed  
+2. **Circle Details** — sticky Join Circle  
+3. **Welcome** — membership confirmation  
+4. **Gathering** — simulated group call  
+5. **Reconnect** — familiar people + next week  
 
-## Scripts
+Design rationale (separate from Eleanor’s path): [/rationale](http://127.0.0.1:43127/rationale)
 
-| Command         | Description                    |
-| --------------- | ------------------------------ |
-| `npm run dev`   | Start the Next.js dev server   |
-| `npm run build` | Production build               |
-| `npm run start` | Serve the production build     |
-| `npm run lint`  | Run ESLint                     |
+On desktop, the app appears in a centered 393×852 phone frame with reviewer annotations. On narrow viewports it goes full-bleed.
 
 ## Stack
 
-- Next.js (App Router) + React + TypeScript
-- Uber Base Web (`baseui`) + Styletron (SSR via `useServerInsertedHTML`)
-- `LightThemeMove` typography: Uber Move / Uber Move Text (self-hosted in `public/fonts/`)
+- Next.js App Router + React + TypeScript  
+- Uber Base Web (`baseui`) + Styletron SSR  
+- Uber Move / Move Text (self-hosted in `public/fonts/`)  
+- Warm Common Ground theme tokens on Base Web primitives  

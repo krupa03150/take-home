@@ -42,7 +42,7 @@ export function HomePage() {
       color="contentPrimary"
       overrides={{
         Block: {
-          props: { "data-alto-stack": "baseui-light-theme" },
+          props: { "data-alto-stack": "baseui-light-theme-move" },
         },
       }}
     >
@@ -71,7 +71,8 @@ export function HomePage() {
           <NavigationList $align={ALIGN.left}>
             <NavigationItem
               className={css({
-                fontFamily: "var(--font-syne), Syne, sans-serif",
+                ...theme.typography.LabelLarge,
+                fontFamily: theme.typography.font750.fontFamily,
                 fontSize: "1.25rem",
                 fontWeight: 700,
                 color: colors.contentInversePrimary,
@@ -198,9 +199,9 @@ export function HomePage() {
                 <p
                   className={`animate-rise ${css({
                     margin: 0,
-                    fontFamily: "var(--font-syne), Syne, sans-serif",
+                    fontFamily: theme.typography.DisplayLarge.fontFamily,
                     fontSize: "clamp(3rem, 10vw, 6rem)",
-                    fontWeight: 800,
+                    fontWeight: 700,
                     letterSpacing: "-0.035em",
                     color: colors.contentInversePrimary,
                   })}`}
@@ -214,7 +215,7 @@ export function HomePage() {
                     marginBottom: "0 !important",
                     maxWidth: "34rem",
                     color: `${colors.contentInversePrimary} !important`,
-                    fontFamily: "var(--font-syne), Syne, sans-serif !important",
+                    fontFamily: `${theme.typography.HeadingLarge.fontFamily} !important`,
                   })}`}
                 >
                   Ship the take-home that reads like a product.
@@ -228,10 +229,10 @@ export function HomePage() {
                     color: colors.mono300,
                   })}`}
                 >
-                  Built on Uber Base Web&apos;s LightTheme — primary black,
-                  accent blue, and mono scales from the design system — with a
-                  brand-first hero and waitlist states reviewers can feel in one
-                  scroll.
+                  Built on Uber Base Web&apos;s LightThemeMove — Uber Move /
+                  Move Text typography, primary black, accent blue, and mono
+                  scales from the design system — with a brand-first hero and
+                  waitlist states reviewers can feel in one scroll.
                 </p>
                 <div
                   id="access"
@@ -444,7 +445,7 @@ export function HomePage() {
             Alto
           </Block>
           <Block>
-            Take-home demo · Next.js · Uber Base Web LightTheme
+            Take-home demo · Next.js · Uber Base Web LightThemeMove
           </Block>
         </Block>
       </Block>

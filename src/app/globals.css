@@ -18,9 +18,20 @@ body {
   min-height: 100%;
   background: #ffffff;
   color: #000000;
-  font-family: var(--font-figtree), Figtree, sans-serif;
+  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+    sans-serif;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: UberMove, UberMoveText, system-ui, "Helvetica Neue", Helvetica,
+    Arial, sans-serif;
 }
 
 .h-full {
@@ -40,7 +51,8 @@ body {
 }
 
 .font-sans {
-  font-family: var(--font-figtree), Figtree, sans-serif;
+  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+    sans-serif;
 }
 
 .antialiased {

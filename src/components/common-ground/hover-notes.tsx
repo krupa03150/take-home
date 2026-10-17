@@ -12,6 +12,10 @@ const NOTES: Record<string, { title: string; body: string }> = {
     title: "Why My Circle exists",
     body: "Familiar faces, showing up next week (“I’ll be there”), and a quiet message to someone she already knows — relationship, not a social graph. Engineering: one screen + local threads. Business: recurring attendance → retention.",
   },
+  "circle-person": {
+    title: "Where a gathering becomes a person",
+    body: "The face, the shared event, and Message are how familiarity starts — she’ll reach out because she already met them, not because it’s a social network. Business: familiar members who message and come back next week are the growth loop (connection → retention + word of mouth). Thin MVP: one local thread, high meaning.",
+  },
   "nav-profile": {
     title: "Why profile shows interests",
     body: "A dedicated place for her interests keeps matching and identity obvious — what she cares about stays visible, not buried in settings.",
@@ -135,7 +139,7 @@ export function HoverNotes() {
             lineHeight: 1.4,
           })}
         >
-          Hover an event card, My Circle, or Profile in the phone to see the
+          Hover a person in My Circle, an event card, or Profile to see the
           note here.
         </div>
       )}

@@ -322,6 +322,7 @@ export function ScreenCircle({ members, confirmed, onConfirm }: Props) {
           {members.map((person) => (
             <li
               key={person.id}
+              data-annotate="circle-person"
               className={css({
                 display: "flex",
                 alignItems: "center",

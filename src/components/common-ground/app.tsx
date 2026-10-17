@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
 import { useStyletron } from "baseui";
 import {
   showsBottomNav,
@@ -9,6 +8,7 @@ import {
   type AuthMode,
 } from "@/lib/app-nav";
 import { seedFriends, type CommunityEvent } from "@/lib/data";
+import { seedChats } from "@/lib/chats";
 import {
   clearSession,
   createEmptyProfile,
@@ -19,14 +19,21 @@ import {
 } from "@/lib/session";
 import { PhoneShell } from "@/components/common-ground/phone-shell";
 import { BottomNav } from "@/components/common-ground/bottom-nav";
-import { DesignAnnotations } from "@/components/common-ground/annotations";
+import { RationalePanel } from "@/components/common-ground/rationale-panel";
+import { HoverNotes } from "@/components/common-ground/hover-notes";
 import { ScreenLanding } from "@/components/common-ground/screen-landing";
 import { ScreenAuth } from "@/components/common-ground/screen-auth";
 import { ScreenSetup } from "@/components/common-ground/screen-setup";
 import { ScreenFeed } from "@/components/common-ground/screen-feed";
 import { ScreenEvent } from "@/components/common-ground/screen-event";
 import { ScreenGathering } from "@/components/common-ground/screen-gathering";
-import { ScreenProfile } from "@/components/common-ground/screen-profile";
+import { ScreenUpcoming } from "@/components/common-ground/screen-upcoming";
+import { ScreenChats } from "@/components/common-ground/screen-chats";
+import { ScreenChatThread } from "@/components/common-ground/screen-chat-thread";
+import {
+  ScreenProfile,
+  type Prefs,
+} from "@/components/common-ground/screen-profile";
 
 function initialScreen(user: UserProfile | null): AppScreen {
   if (!user) return "landing";
@@ -36,15 +43,20 @@ function initialScreen(user: UserProfile | null): AppScreen {
 
 export function CommonGroundApp() {
   const [css, theme] = useStyletron();
-  const router = useRouter();
   const [, startTransition] = useTransition();
   const [hydrated, setHydrated] = useState(false);
   const [session, setSession] = useState<SessionState>(() => loadSession());
   const [screen, setScreen] = useState<AppScreen>("landing");
   const [authMode, setAuthMode] = useState<AuthMode>("signup");
   const [eventId, setEventId] = useState<string | null>(null);
+  const [chatId, setChatId] = useState<string | null>(null);
   const [joining, setJoining] = useState(false);
   const [joinError, setJoinError] = useState<string | null>(null);
+  const [prefs, setPrefs] = useState<Prefs>({
+    largeText: false,
+    reduceMotion: false,
+  });
+  const [whyOpen, setWhyOpen] = useState(false);
 
   useEffect(() => {
     const loaded = loadSession();
@@ -57,6 +69,14 @@ export function CommonGroundApp() {
     if (!hydrated) return;
     saveSession(session);
   }, [session, hydrated]);
+
+  useEffect(() => {
+    if (prefs.reduceMotion) {
+      document.documentElement.dataset.reduceMotion = "true";
+    } else {
+      delete document.documentElement.dataset.reduceMotion;
+    }
+  }, [prefs.reduceMotion]);
 
   const go = (next: AppScreen) => {
     startTransition(() => setScreen(next));
@@ -115,15 +135,19 @@ export function CommonGroundApp() {
 
   const activeEvent =
     session.events.find((e) => e.id === eventId) ?? session.events[0];
+  const activeChat = seedChats.find((c) => c.id === chatId) ?? seedChats[0];
 
   const handleJoin = () => {
     if (!activeEvent || !session.user) return;
     setJoinError(null);
     setJoining(true);
     window.setTimeout(() => {
-      const friendIdsForEvent = seedFriends
+      let friendIdsForEvent = seedFriends
         .filter((f) => f.metAtEventId === activeEvent.id)
         .map((f) => f.id);
+      if (friendIdsForEvent.length === 0) {
+        friendIdsForEvent = seedFriends.slice(0, 2).map((f) => f.id);
+      }
       setSession((prev) => {
         if (!prev.user) return prev;
         const already = prev.user.joinedEventIds.includes(activeEvent.id);
@@ -147,7 +171,7 @@ export function CommonGroundApp() {
       });
       setJoining(false);
       go("gathering");
-    }, 650);
+    }, prefs.reduceMotion ? 0 : 650);
   };
 
   const handleCreateEvent = (
@@ -177,6 +201,7 @@ export function CommonGroundApp() {
     clearSession();
     setSession({ user: null, events: session.events });
     setEventId(null);
+    setChatId(null);
     go("landing");
   };
 
@@ -189,7 +214,7 @@ export function CommonGroundApp() {
           placeItems: "center",
           backgroundColor: theme.colors.backgroundPrimary,
           color: theme.colors.contentPrimary,
-          fontSize: "17px",
+          fontSize: "18px",
         })}
       >
         Loading Common Ground…
@@ -208,7 +233,8 @@ export function CommonGroundApp() {
         alignItems: "center",
         justifyContent: "center",
         padding: "16px",
-        gap: "28px",
+        gap: "20px",
+        fontSize: prefs.largeText ? "19px" : "18px",
         "@media screen and (max-width: 480px)": {
           padding: 0,
           backgroundImage: "none",
@@ -243,9 +269,42 @@ export function CommonGroundApp() {
             color: theme.colors.contentInverseSecondary,
           })}
         >
-          Mobile-first iPhone preview · 393×852 (also 375)
+          Mobile-first iPhone preview · 393×852 — rationale stays outside the
+          phone
         </p>
       </div>
+
+      {/* Narrow viewport: Why this outside Eleanor’s nav */}
+      <button
+        type="button"
+        onClick={() => setWhyOpen(true)}
+        className={css({
+          display: "none",
+          minHeight: "44px",
+          paddingLeft: "16px",
+          paddingRight: "16px",
+          borderRadius: "999px",
+          border: `1.5px solid ${theme.colors.borderOpaque}`,
+          backgroundColor: theme.colors.backgroundPrimary,
+          color: theme.colors.contentPrimary,
+          fontWeight: 700,
+          fontSize: "16px",
+          cursor: "pointer",
+          "@media screen and (max-width: 900px)": {
+            display: "inline-flex",
+            alignItems: "center",
+          },
+          "@media screen and (max-width: 480px)": {
+            position: "fixed",
+            top: "calc(10px + env(safe-area-inset-top, 0px))",
+            right: "12px",
+            zIndex: 30,
+            boxShadow: "0 4px 16px rgba(0,0,0,0.12)",
+          },
+        })}
+      >
+        Why this
+      </button>
 
       <div
         className={`cg-stage ${css({
@@ -254,7 +313,16 @@ export function CommonGroundApp() {
           },
         })}`}
       >
-        <DesignAnnotations screen={screen} />
+        <div
+          className={css({
+            display: "block",
+            "@media screen and (max-width: 900px)": {
+              display: "none",
+            },
+          })}
+        >
+          <RationalePanel />
+        </div>
 
         <PhoneShell>
           <div
@@ -266,6 +334,7 @@ export function CommonGroundApp() {
               position: "relative",
               color: theme.colors.contentPrimary,
               backgroundColor: theme.colors.backgroundPrimary,
+              fontSize: prefs.largeText ? "19px" : undefined,
             })}
           >
             <main
@@ -333,7 +402,33 @@ export function CommonGroundApp() {
                 <ScreenGathering
                   event={activeEvent}
                   userName={session.user.name}
-                  onLeave={() => go("profile")}
+                  onLeave={() => go("upcoming")}
+                />
+              )}
+              {screen === "upcoming" && session.user && (
+                <ScreenUpcoming
+                  events={session.events}
+                  joinedEventIds={session.user.joinedEventIds}
+                  onOpenEvent={(id) => {
+                    setEventId(id);
+                    go("event");
+                  }}
+                />
+              )}
+              {screen === "chats" && session.user && (
+                <ScreenChats
+                  threads={seedChats}
+                  friendIds={session.user.friendIds}
+                  onOpenThread={(id) => {
+                    setChatId(id);
+                    go("chat-thread");
+                  }}
+                />
+              )}
+              {screen === "chat-thread" && activeChat && (
+                <ScreenChatThread
+                  thread={activeChat}
+                  onBack={() => go("chats")}
                 />
               )}
               {screen === "profile" && session.user && (
@@ -341,6 +436,8 @@ export function CommonGroundApp() {
                   user={session.user}
                   events={session.events}
                   friends={seedFriends}
+                  prefs={prefs}
+                  onPrefsChange={setPrefs}
                   onOpenEvent={(id) => {
                     setEventId(id);
                     go("event");
@@ -354,13 +451,21 @@ export function CommonGroundApp() {
               <BottomNav
                 screen={screen}
                 onFeed={() => go("feed")}
+                onUpcoming={() => go("upcoming")}
+                onChats={() => go("chats")}
                 onProfile={() => go("profile")}
-                onRationale={() => router.push("/rationale")}
               />
             )}
           </div>
         </PhoneShell>
       </div>
+
+      <HoverNotes />
+      <RationalePanel
+        compact
+        open={whyOpen}
+        onClose={() => setWhyOpen(false)}
+      />
     </div>
   );
 }

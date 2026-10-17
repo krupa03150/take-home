@@ -136,9 +136,9 @@ export function ScreenGathering({ event, userName, onLeave }: Props) {
         ))}
       </div>
 
-      <PrimaryButton onClick={onLeave}>Leave & go to profile</PrimaryButton>
+      <PrimaryButton onClick={onLeave}>Leave gathering</PrimaryButton>
       <div className={css({ height: "10px" })} />
-      <SecondaryButton onClick={onLeave}>Stay listed as joined</SecondaryButton>
+      <SecondaryButton onClick={onLeave}>Done for now</SecondaryButton>
     </div>
   );
 }

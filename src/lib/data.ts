@@ -458,6 +458,30 @@ export const seedFriends: Friend[] = [
     tint: "#D8E8D4",
     metAtEventId: "porch-walk",
   },
+  {
+    id: "ana",
+    name: "Ana Voss",
+    note: "Chair Yoga host · joints first, breath second",
+    initials: "AV",
+    tint: "#E2D6F0",
+    metAtEventId: "chair-yoga",
+  },
+  {
+    id: "ruth",
+    name: "Ruth Alvarez",
+    note: "Book Club host · unhurried discussion",
+    initials: "RA",
+    tint: "#F0D9C8",
+    metAtEventId: "book-club",
+  },
+  {
+    id: "dorothy",
+    name: "Dorothy Kim",
+    note: "Garden Hour · patient with brown thumbs",
+    initials: "DK",
+    tint: "#C9E4D8",
+    metAtEventId: "garden-hour",
+  },
 ];
 
 export function getSeedEvent(id: string): CommunityEvent | undefined {

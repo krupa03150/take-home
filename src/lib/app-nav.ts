@@ -5,10 +5,18 @@ export type AppScreen =
   | "feed"
   | "event"
   | "gathering"
+  | "upcoming"
+  | "chats"
+  | "chat-thread"
   | "profile";
 
 export type AuthMode = "signup" | "signin";
 
 export function showsBottomNav(screen: AppScreen): boolean {
-  return screen === "feed" || screen === "profile";
+  return (
+    screen === "feed" ||
+    screen === "upcoming" ||
+    screen === "chats" ||
+    screen === "profile"
+  );
 }

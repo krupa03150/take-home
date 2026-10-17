@@ -429,6 +429,7 @@ export function ScreenFeed({
               <button
                 key={event.id}
                 type="button"
+                data-annotate="event-card"
                 onClick={() => onOpenEvent(event.id)}
                 className={css({
                   textAlign: "left",

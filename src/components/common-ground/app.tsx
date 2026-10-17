@@ -8,7 +8,7 @@ import {
   type AuthMode,
 } from "@/lib/app-nav";
 import { seedFriends, type CommunityEvent } from "@/lib/data";
-import { seedChats } from "@/lib/chats";
+import { circleMembers } from "@/lib/circle";
 import {
   clearSession,
   createEmptyProfile,
@@ -28,8 +28,7 @@ import { ScreenFeed } from "@/components/common-ground/screen-feed";
 import { ScreenEvent } from "@/components/common-ground/screen-event";
 import { ScreenGathering } from "@/components/common-ground/screen-gathering";
 import { ScreenUpcoming } from "@/components/common-ground/screen-upcoming";
-import { ScreenChats } from "@/components/common-ground/screen-chats";
-import { ScreenChatThread } from "@/components/common-ground/screen-chat-thread";
+import { ScreenCircle } from "@/components/common-ground/screen-circle";
 import {
   ScreenProfile,
   type Prefs,
@@ -49,7 +48,6 @@ export function CommonGroundApp() {
   const [screen, setScreen] = useState<AppScreen>("landing");
   const [authMode, setAuthMode] = useState<AuthMode>("signup");
   const [eventId, setEventId] = useState<string | null>(null);
-  const [chatId, setChatId] = useState<string | null>(null);
   const [joining, setJoining] = useState(false);
   const [joinError, setJoinError] = useState<string | null>(null);
   const [prefs, setPrefs] = useState<Prefs>({
@@ -135,7 +133,6 @@ export function CommonGroundApp() {
 
   const activeEvent =
     session.events.find((e) => e.id === eventId) ?? session.events[0];
-  const activeChat = seedChats.find((c) => c.id === chatId) ?? seedChats[0];
 
   const handleJoin = () => {
     if (!activeEvent || !session.user) return;
@@ -201,8 +198,11 @@ export function CommonGroundApp() {
     clearSession();
     setSession({ user: null, events: session.events });
     setEventId(null);
-    setChatId(null);
     go("landing");
+  };
+
+  const handleCircleConfirm = () => {
+    updateUser((user) => ({ ...user, circleNextWeekRsvp: true }));
   };
 
   if (!hydrated) {
@@ -383,20 +383,11 @@ export function CommonGroundApp() {
                   }}
                 />
               )}
-              {screen === "chats" && session.user && (
-                <ScreenChats
-                  threads={seedChats}
-                  friendIds={session.user.friendIds}
-                  onOpenThread={(id) => {
-                    setChatId(id);
-                    go("chat-thread");
-                  }}
-                />
-              )}
-              {screen === "chat-thread" && activeChat && (
-                <ScreenChatThread
-                  thread={activeChat}
-                  onBack={() => go("chats")}
+              {screen === "circle" && session.user && (
+                <ScreenCircle
+                  members={circleMembers(session.user.friendIds)}
+                  confirmed={session.user.circleNextWeekRsvp}
+                  onConfirm={handleCircleConfirm}
                 />
               )}
               {screen === "profile" && session.user && (
@@ -420,7 +411,7 @@ export function CommonGroundApp() {
                 screen={screen}
                 onFeed={() => go("feed")}
                 onUpcoming={() => go("upcoming")}
-                onChats={() => go("chats")}
+                onCircle={() => go("circle")}
                 onProfile={() => go("profile")}
               />
             )}

@@ -15,6 +15,8 @@ export type UserProfile = {
   setupComplete: boolean;
   joinedEventIds: string[];
   friendIds: string[];
+  /** My Circle: confirmed for next weekly gathering. */
+  circleNextWeekRsvp: boolean;
 };
 
 export type SessionState = {
@@ -43,8 +45,17 @@ export function loadSession(): SessionState {
       )
         ? parsed.events
         : seedEvents.map((e) => ({ ...e }));
+    const user = parsed.user
+      ? {
+          ...parsed.user,
+          circleNextWeekRsvp: Boolean(parsed.user.circleNextWeekRsvp),
+          friendIds: Array.isArray(parsed.user.friendIds)
+            ? parsed.user.friendIds
+            : [],
+        }
+      : null;
     return {
-      user: parsed.user ?? null,
+      user,
       events,
     };
   } catch {
@@ -76,5 +87,6 @@ export function createEmptyProfile(
     setupComplete: false,
     joinedEventIds: [],
     friendIds: [],
+    circleNextWeekRsvp: false,
   };
 }

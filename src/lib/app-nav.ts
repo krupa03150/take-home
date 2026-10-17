@@ -6,8 +6,7 @@ export type AppScreen =
   | "event"
   | "gathering"
   | "upcoming"
-  | "chats"
-  | "chat-thread"
+  | "circle"
   | "profile";
 
 export type AuthMode = "signup" | "signin";
@@ -16,7 +15,7 @@ export function showsBottomNav(screen: AppScreen): boolean {
   return (
     screen === "feed" ||
     screen === "upcoming" ||
-    screen === "chats" ||
+    screen === "circle" ||
     screen === "profile"
   );
 }

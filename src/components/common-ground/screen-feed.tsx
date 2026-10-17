@@ -316,134 +316,132 @@ export function ScreenFeed({
         >
           Find a gathering by name or interest.
         </p>
-        <input
-          id="cg-feed-search"
-          type="search"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          aria-describedby="cg-feed-search-hint"
-          autoComplete="off"
-          enterKeyHint="search"
-          className={css({
-            width: "100%",
-            minHeight: "52px",
-            borderRadius: "14px",
-            border: `1.5px solid ${theme.colors.borderOpaque}`,
-            backgroundColor: theme.colors.backgroundPrimary,
-            color: theme.colors.contentPrimary,
-            fontSize: "18px",
-            paddingLeft: "14px",
-            paddingRight: "14px",
-            fontFamily: theme.typography.ParagraphMedium.fontFamily,
-            boxSizing: "border-box",
-            ":focus-visible": {
-              outline: `2px solid ${theme.colors.accent}`,
-              outlineOffset: "1px",
-              borderColor: theme.colors.accent,
-            },
-          })}
-        />
-      </div>
-
-      {/* Interest chips + date filter */}
-      <div
-        className={css({
-          display: "flex",
-          alignItems: "center",
-          gap: "8px",
-          marginTop: "14px",
-          marginBottom: "14px",
-        })}
-      >
         <div
-          role="tablist"
-          aria-label="Filter by interest"
           className={css({
             display: "flex",
-            gap: "8px",
-            overflowX: "auto",
-            flex: 1,
-            minWidth: 0,
-            WebkitOverflowScrolling: "touch",
-            paddingBottom: "2px",
-          })}
-        >
-          {interestChips.map((chip) => {
-            const active = chip === interestChip;
-            const label = chip === "all" ? "All" : chip;
-            return (
-              <button
-                key={chip}
-                type="button"
-                role="tab"
-                aria-selected={active}
-                onClick={() => setInterestChip(chip)}
-                className={chipButton(active)}
-              >
-                {label}
-              </button>
-            );
-          })}
-        </div>
-
-        <button
-          type="button"
-          aria-label={
-            dateFilter === "any"
-              ? "Open date filter"
-              : `Open date filter, ${activeDateChip?.label ?? "active"}`
-          }
-          aria-expanded={filterOpen}
-          onClick={openDateFilter}
-          className={css({
-            flexShrink: 0,
-            width: "44px",
-            height: "44px",
-            borderRadius: "12px",
-            border: `1.5px solid ${
-              dateFilter !== "any"
-                ? theme.colors.accent
-                : theme.colors.borderOpaque
-            }`,
-            backgroundColor:
-              dateFilter !== "any"
-                ? theme.colors.backgroundAccentLight
-                : theme.colors.backgroundPrimary,
-            color: theme.colors.contentPrimary,
-            cursor: "pointer",
-            display: "inline-flex",
             alignItems: "center",
-            justifyContent: "center",
-            position: "relative",
-            ":focus-visible": {
-              outline: `2px solid ${theme.colors.accent}`,
-              outlineOffset: "2px",
-            },
+            gap: "10px",
           })}
         >
-          <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden>
-            <path
-              d="M3 5h14l-5.5 6.2V15l-3 1.5v-5.3L3 5Z"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.8"
-              strokeLinejoin="round"
-            />
-          </svg>
-          {dateFilter !== "any" && (
-            <span
-              className={css({
-                position: "absolute",
-                top: "6px",
-                right: "6px",
-                width: "8px",
-                height: "8px",
-                borderRadius: "50%",
-                backgroundColor: theme.colors.accent,
-              })}
-            />
-          )}
-        </button>
+          <input
+            id="cg-feed-search"
+            type="search"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            aria-describedby="cg-feed-search-hint"
+            autoComplete="off"
+            enterKeyHint="search"
+            className={css({
+              flex: 1,
+              minWidth: 0,
+              minHeight: "52px",
+              borderRadius: "14px",
+              border: `1.5px solid ${theme.colors.borderOpaque}`,
+              backgroundColor: theme.colors.backgroundPrimary,
+              color: theme.colors.contentPrimary,
+              fontSize: "18px",
+              paddingLeft: "14px",
+              paddingRight: "14px",
+              fontFamily: theme.typography.ParagraphMedium.fontFamily,
+              boxSizing: "border-box",
+              ":focus-visible": {
+                outline: `2px solid ${theme.colors.accent}`,
+                outlineOffset: "1px",
+                borderColor: theme.colors.accent,
+              },
+            })}
+          />
+          <button
+            type="button"
+            aria-label={
+              dateFilter === "any"
+                ? "Open date filter"
+                : `Open date filter, ${activeDateChip?.label ?? "active"}`
+            }
+            aria-expanded={filterOpen}
+            onClick={openDateFilter}
+            className={css({
+              flexShrink: 0,
+              width: "52px",
+              height: "52px",
+              borderRadius: "14px",
+              border: `1.5px solid ${
+                dateFilter !== "any"
+                  ? theme.colors.accent
+                  : theme.colors.borderOpaque
+              }`,
+              backgroundColor:
+                dateFilter !== "any"
+                  ? theme.colors.backgroundAccentLight
+                  : theme.colors.backgroundPrimary,
+              color: theme.colors.contentPrimary,
+              cursor: "pointer",
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+              position: "relative",
+              ":focus-visible": {
+                outline: `2px solid ${theme.colors.accent}`,
+                outlineOffset: "2px",
+              },
+            })}
+          >
+            <svg width="22" height="22" viewBox="0 0 20 20" aria-hidden>
+              <path
+                d="M3 5h14l-5.5 6.2V15l-3 1.5v-5.3L3 5Z"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinejoin="round"
+              />
+            </svg>
+            {dateFilter !== "any" && (
+              <span
+                className={css({
+                  position: "absolute",
+                  top: "8px",
+                  right: "8px",
+                  width: "8px",
+                  height: "8px",
+                  borderRadius: "50%",
+                  backgroundColor: theme.colors.accent,
+                })}
+              />
+            )}
+          </button>
+        </div>
+      </div>
+
+      {/* Interest chips */}
+      <div
+        role="tablist"
+        aria-label="Filter by interest"
+        className={css({
+          display: "flex",
+          gap: "8px",
+          overflowX: "auto",
+          marginTop: "14px",
+          marginBottom: "14px",
+          WebkitOverflowScrolling: "touch",
+          paddingBottom: "2px",
+        })}
+      >
+        {interestChips.map((chip) => {
+          const active = chip === interestChip;
+          const label = chip === "all" ? "All" : chip;
+          return (
+            <button
+              key={chip}
+              type="button"
+              role="tab"
+              aria-selected={active}
+              onClick={() => setInterestChip(chip)}
+              className={chipButton(active)}
+            >
+              {label}
+            </button>
+          );
+        })}
       </div>
 
       {dateFilter !== "any" && activeDateChip && (

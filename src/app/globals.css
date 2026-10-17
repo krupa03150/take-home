@@ -1,9 +1,4 @@
 :root {
-  --ink: #06141a;
-  --mist: #d7ebe6;
-  --sea: #1f8a7a;
-  --tide: #0d3d3a;
-  --foam: #f3faf8;
   color-scheme: light;
 }
 
@@ -21,8 +16,8 @@ html {
 body {
   margin: 0;
   min-height: 100%;
-  background: var(--foam);
-  color: var(--ink);
+  background: #ffffff;
+  color: #000000;
   font-family: var(--font-figtree), Figtree, sans-serif;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;

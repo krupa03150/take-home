@@ -13,7 +13,6 @@ import { Heading, HeadingLevel } from "baseui/heading";
 import { StyledLink } from "baseui/link";
 import { Tag, KIND as TAG_KIND, HIERARCHY as TAG_HIERARCHY } from "baseui/tag";
 import { WaitlistForm } from "@/components/waitlist-form";
-import { brand } from "@/lib/theme";
 
 const craft = [
   {
@@ -32,17 +31,18 @@ const craft = [
 
 export function HomePage() {
   const [css, theme] = useStyletron();
+  const { colors } = theme;
 
   return (
     <Block
       display="flex"
       flexDirection="column"
       minHeight="100%"
-      backgroundColor={brand.foam}
-      color={brand.ink}
+      backgroundColor="backgroundPrimary"
+      color="contentPrimary"
       overrides={{
         Block: {
-          props: { "data-alto-stack": "baseui+styletron" },
+          props: { "data-alto-stack": "baseui-light-theme" },
         },
       }}
     >
@@ -74,7 +74,7 @@ export function HomePage() {
                 fontFamily: "var(--font-syne), Syne, sans-serif",
                 fontSize: "1.25rem",
                 fontWeight: 700,
-                color: brand.foam,
+                color: colors.contentInversePrimary,
                 listStyleType: "none",
               })}
             >
@@ -93,15 +93,8 @@ export function HomePage() {
                     style: {
                       marginTop: 0,
                       marginBottom: 0,
-                      backgroundColor: "rgba(243,250,248,0.14)",
-                      color: brand.foam,
-                      borderTopWidth: 0,
-                      borderRightWidth: 0,
-                      borderBottomWidth: 0,
-                      borderLeftWidth: 0,
                     },
                   },
-                  Text: { style: { color: brand.foam } },
                 }}
               >
                 Uber Base Web
@@ -111,9 +104,10 @@ export function HomePage() {
               <StyledLink
                 href="#access"
                 className={css({
-                  color: "rgba(215,235,230,0.9) !important",
+                  color: `${colors.contentInversePrimary} !important`,
                   textDecoration: "none",
                   fontWeight: 500,
+                  ":hover": { color: `${colors.accent200} !important` },
                 })}
               >
                 Get access
@@ -130,7 +124,8 @@ export function HomePage() {
             isolation: "isolate",
             minHeight: "100svh",
             overflow: "hidden",
-            color: brand.foam,
+            color: colors.contentInversePrimary,
+            backgroundColor: colors.backgroundInversePrimary,
           })}
         >
           <div
@@ -139,8 +134,7 @@ export function HomePage() {
               position: "absolute",
               inset: 0,
               zIndex: -10,
-              backgroundImage:
-                "radial-gradient(120% 80% at 10% 0%, #1f8a7a 0%, transparent 42%), radial-gradient(90% 70% at 90% 20%, #14665c 0%, transparent 45%), linear-gradient(165deg, #06141a 0%, #0a2a28 48%, #123f3a 100%)",
+              backgroundImage: `radial-gradient(120% 80% at 12% 0%, ${colors.accent} 0%, transparent 42%), radial-gradient(90% 70% at 88% 18%, ${colors.accent600} 0%, transparent 48%), linear-gradient(165deg, ${colors.mono1000} 0%, ${colors.mono900} 52%, ${colors.gray900} 100%)`,
             })}
           />
           <div
@@ -153,8 +147,7 @@ export function HomePage() {
               height: "70%",
               width: "70%",
               borderRadius: "9999px",
-              backgroundImage:
-                "radial-gradient(circle, rgba(196,232,216,0.22), transparent 68%)",
+              backgroundImage: `radial-gradient(circle, ${colors.accent200}55, transparent 68%)`,
               filter: "blur(28px)",
             })}`}
           />
@@ -168,8 +161,7 @@ export function HomePage() {
               height: "55%",
               width: "55%",
               borderRadius: "9999px",
-              backgroundImage:
-                "radial-gradient(circle, rgba(31,138,122,0.35), transparent 70%)",
+              backgroundImage: `radial-gradient(circle, ${colors.accent}40, transparent 70%)`,
               filter: "blur(36px)",
               animationDelay: "-6s",
             })}`}
@@ -210,7 +202,7 @@ export function HomePage() {
                     fontSize: "clamp(3rem, 10vw, 6rem)",
                     fontWeight: 800,
                     letterSpacing: "-0.035em",
-                    color: brand.foam,
+                    color: colors.contentInversePrimary,
                   })}`}
                 >
                   Alto
@@ -221,7 +213,7 @@ export function HomePage() {
                     marginTop: "1.25rem !important",
                     marginBottom: "0 !important",
                     maxWidth: "34rem",
-                    color: `${brand.foam} !important`,
+                    color: `${colors.contentInversePrimary} !important`,
                     fontFamily: "var(--font-syne), Syne, sans-serif !important",
                   })}`}
                 >
@@ -233,12 +225,13 @@ export function HomePage() {
                     maxWidth: "32rem",
                     fontSize: "clamp(1rem, 2vw, 1.125rem)",
                     lineHeight: 1.6,
-                    color: "rgba(215,235,230,0.85)",
+                    color: colors.mono300,
                   })}`}
                 >
-                  Built with Uber&apos;s Base Web design system and Styletron —
-                  brand-first hero, honest copy, and waitlist states reviewers
-                  can feel in one scroll.
+                  Built on Uber Base Web&apos;s LightTheme — primary black,
+                  accent blue, and mono scales from the design system — with a
+                  brand-first hero and waitlist states reviewers can feel in one
+                  scroll.
                 </p>
                 <div
                   id="access"
@@ -252,10 +245,12 @@ export function HomePage() {
         </section>
 
         <Block
-          backgroundColor={brand.foam}
+          backgroundColor="backgroundPrimary"
           overrides={{
             Block: {
-              style: { borderTop: "1px solid rgba(13,61,58,0.1)" },
+              style: {
+                borderTop: `1px solid ${colors.borderOpaque}`,
+              },
             },
           }}
         >
@@ -285,7 +280,7 @@ export function HomePage() {
             }}
           >
             <HeadingLevel>
-              <Heading styleLevel={3} color={brand.ink}>
+              <Heading styleLevel={3} color="contentPrimary">
                 Built for the reviewer who opens one tab.
               </Heading>
               <p
@@ -294,12 +289,12 @@ export function HomePage() {
                   maxWidth: "28rem",
                   fontSize: "1.05rem",
                   lineHeight: 1.6,
-                  color: theme.colors.contentSecondary,
+                  color: colors.contentSecondary,
                 })}
               >
                 Alto keeps the slice narrow on purpose: one composition, one
-                promise, and enough polish to prove taste — now composed from
-                Base Web primitives instead of a Tailwind/shadcn mashup.
+                promise, and Base Web semantic colors instead of a custom
+                palette fighting the design system.
               </p>
             </HeadingLevel>
             <ul className={css({ listStyle: "none", margin: 0, padding: 0 })}>
@@ -307,14 +302,14 @@ export function HomePage() {
                 <li
                   key={item.title}
                   className={css({
-                    borderLeft: `2px solid ${theme.colors.primary}`,
+                    borderLeft: `2px solid ${colors.accent}`,
                     paddingLeft: "1.25rem",
                     marginBottom: "2rem",
                     ":last-child": { marginBottom: 0 },
                   })}
                 >
                   <HeadingLevel>
-                    <Heading styleLevel={5} color={brand.ink}>
+                    <Heading styleLevel={5} color="contentPrimary">
                       {item.title}
                     </Heading>
                     <p
@@ -322,7 +317,7 @@ export function HomePage() {
                         margin: "0.5rem 0 0",
                         fontSize: "0.975rem",
                         lineHeight: 1.55,
-                        color: theme.colors.contentSecondary,
+                        color: colors.contentSecondary,
                       })}
                     >
                       {item.body}
@@ -334,7 +329,10 @@ export function HomePage() {
           </Block>
         </Block>
 
-        <Block backgroundColor={brand.tide} color={brand.foam}>
+        <Block
+          backgroundColor="backgroundInversePrimary"
+          color="contentInversePrimary"
+        >
           <Block
             maxWidth="72rem"
             marginLeft="auto"
@@ -366,8 +364,10 @@ export function HomePage() {
               <HeadingLevel>
                 <Heading
                   styleLevel={3}
-                  color={brand.foam}
-                  className={css({ color: `${brand.foam} !important` })}
+                  color="contentInversePrimary"
+                  className={css({
+                    color: `${colors.contentInversePrimary} !important`,
+                  })}
                 >
                   Ready when the prompt hits your inbox.
                 </Heading>
@@ -377,14 +377,29 @@ export function HomePage() {
                   margin: "0.75rem 0 0",
                   fontSize: "1rem",
                   lineHeight: 1.6,
-                  color: "rgba(215,235,230,0.8)",
+                  color: colors.mono400,
                 })}
               >
                 Clone it, rename the brand, keep the craft. Localhost in under a
                 minute.
               </p>
             </Block>
-            <Button $as="a" href="#access">
+            <Button
+              $as="a"
+              href="#access"
+              kind="secondary"
+              overrides={{
+                BaseButton: {
+                  style: {
+                    backgroundColor: colors.contentInversePrimary,
+                    color: colors.contentPrimary,
+                    ":hover": {
+                      backgroundColor: colors.mono200,
+                    },
+                  },
+                },
+              }}
+            >
               Join the list
             </Button>
           </Block>
@@ -392,10 +407,12 @@ export function HomePage() {
       </main>
 
       <Block
-        backgroundColor={brand.foam}
+        backgroundColor="backgroundPrimary"
         overrides={{
           Block: {
-            style: { borderTop: "1px solid rgba(13,61,58,0.15)" },
+            style: {
+              borderTop: `1px solid ${colors.borderOpaque}`,
+            },
           },
         }}
       >
@@ -423,11 +440,11 @@ export function HomePage() {
             },
           }}
         >
-          <Block font="LabelMedium" color={brand.ink}>
+          <Block font="LabelMedium" color="contentPrimary">
             Alto
           </Block>
           <Block>
-            Take-home demo · Next.js · Uber Base Web (`baseui` + Styletron)
+            Take-home demo · Next.js · Uber Base Web LightTheme
           </Block>
         </Block>
       </Block>

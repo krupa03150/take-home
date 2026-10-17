@@ -5,12 +5,12 @@ import { useStyletron } from "baseui";
 import { Block } from "baseui/block";
 import { Button, KIND, SIZE } from "baseui/button";
 import { Input } from "baseui/input";
-import { brand } from "@/lib/theme";
 
 type FormState = "idle" | "loading" | "success" | "error";
 
 export function WaitlistForm() {
-  const [css] = useStyletron();
+  const [css, theme] = useStyletron();
+  const { colors } = theme;
   const [email, setEmail] = useState("");
   const [state, setState] = useState<FormState>("idle");
   const [message, setMessage] = useState("");
@@ -38,19 +38,23 @@ export function WaitlistForm() {
       <Block
         maxWidth="28rem"
         padding="scale600"
-        backgroundColor="primaryB"
+        backgroundColor="backgroundPrimary"
         overrides={{
           Block: {
             style: {
-              borderRadius: "12px",
-              border: `1px solid ${brand.sea}40`,
-              boxShadow: "0 20px 60px -40px rgba(6,20,26,0.45)",
+              borderRadius: theme.borders.radius400,
+              border: `1px solid ${colors.borderOpaque}`,
+              boxShadow: theme.lighting.shadow400,
             },
             props: { role: "status", "aria-live": "polite" },
           },
         }}
       >
-        <Block font="HeadingSmall" color={brand.ink} marginBottom="scale200">
+        <Block
+          font="HeadingSmall"
+          color="contentPrimary"
+          marginBottom="scale200"
+        >
           You&apos;re in.
         </Block>
         <Block font="ParagraphSmall" color="contentSecondary">
@@ -70,7 +74,7 @@ export function WaitlistForm() {
                 marginTop: "0.65rem",
                 paddingLeft: 0,
                 paddingRight: 0,
-                color: brand.sea,
+                color: colors.contentAccent,
               },
             },
           }}
@@ -99,7 +103,7 @@ export function WaitlistForm() {
         as="label"
         htmlFor="waitlist-email"
         font="LabelMedium"
-        color={brand.foam}
+        color="contentInversePrimary"
         marginBottom="scale300"
         display="block"
       >
@@ -169,7 +173,7 @@ export function WaitlistForm() {
         id="waitlist-caption"
         font="ParagraphSmall"
         marginTop="scale300"
-        color={state === "error" ? "#ffb4a8" : "rgba(215,235,230,0.75)"}
+        color={state === "error" ? "negative" : colors.mono400}
         overrides={{ Block: { props: { "aria-live": "polite" } } }}
       >
         {caption}

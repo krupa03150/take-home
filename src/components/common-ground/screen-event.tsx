@@ -1,36 +1,40 @@
 "use client";
 
 import { useStyletron } from "baseui";
-import { Button } from "baseui/button";
 import { Heading, HeadingLevel } from "baseui/heading";
-import type { Circle } from "@/lib/data";
+import type { CommunityEvent } from "@/lib/data";
+import { PrimaryButton, ScreenFrame } from "@/components/common-ground/ui";
 
 type Props = {
-  circle: Circle;
+  event: CommunityEvent;
+  joined: boolean;
   joining: boolean;
   joinError: string | null;
   onBack: () => void;
   onJoin: () => void;
+  onEnterGathering: () => void;
 };
 
-export function ScreenDetails({
-  circle,
+export function ScreenEvent({
+  event,
+  joined,
   joining,
   joinError,
   onBack,
   onJoin,
+  onEnterGathering,
 }: Props) {
   const [css, theme] = useStyletron();
 
   return (
     <div
       className={css({
+        height: "100%",
         display: "flex",
         flexDirection: "column",
-        height: "100%",
-        position: "relative",
         backgroundColor: theme.colors.backgroundPrimary,
         color: theme.colors.contentPrimary,
+        position: "relative",
       })}
     >
       <div
@@ -43,7 +47,7 @@ export function ScreenDetails({
       >
         <div
           className={css({
-            height: "168px",
+            height: "148px",
             backgroundImage: `linear-gradient(145deg, ${theme.colors.accent600} 0%, ${theme.colors.accent300} 55%, ${theme.colors.accent100} 100%)`,
             paddingTop: "calc(10px + env(safe-area-inset-top, 0px))",
             paddingLeft: "12px",
@@ -53,7 +57,7 @@ export function ScreenDetails({
           <button
             type="button"
             onClick={onBack}
-            aria-label="Back to Explore"
+            aria-label="Back to feed"
             className={css({
               minHeight: "44px",
               minWidth: "44px",
@@ -80,8 +84,9 @@ export function ScreenDetails({
         <div
           className={css({
             padding: "20px",
-            marginTop: "-28px",
+            marginTop: "-24px",
             backgroundColor: theme.colors.backgroundPrimary,
+            color: theme.colors.contentPrimary,
             borderTopLeftRadius: "24px",
             borderTopRightRadius: "24px",
           })}
@@ -91,22 +96,23 @@ export function ScreenDetails({
               margin: 0,
               fontSize: "13px",
               fontWeight: 700,
-              color: theme.colors.contentAccent,
+              color: theme.colors.accent600,
               textTransform: "uppercase",
               letterSpacing: "0.04em",
             })}
           >
-            {circle.interest} · {circle.members} members
+            {event.interest} · {event.attendees} going · Virtual
           </p>
           <HeadingLevel>
             <Heading
               styleLevel={3}
+              color="contentPrimary"
               className={css({
                 marginTop: "8px !important",
                 marginBottom: "0 !important",
               })}
             >
-              {circle.name}
+              {event.title}
             </Heading>
           </HeadingLevel>
           <p
@@ -117,7 +123,7 @@ export function ScreenDetails({
               color: theme.colors.contentSecondary,
             })}
           >
-            {circle.tagline}
+            {event.description}
           </p>
 
           <section className={css({ marginTop: "22px" })}>
@@ -126,19 +132,20 @@ export function ScreenDetails({
                 margin: 0,
                 fontSize: "15px",
                 fontWeight: 700,
-                fontFamily: theme.typography.LabelLarge.fontFamily,
+                color: theme.colors.contentPrimary,
               })}
             >
-              Next gathering
+              When
             </h2>
             <p
               className={css({
                 margin: "6px 0 0",
                 fontSize: "17px",
                 fontWeight: 600,
+                color: theme.colors.contentPrimary,
               })}
             >
-              {circle.nextGathering}
+              {event.when}
             </p>
             <p
               className={css({
@@ -147,7 +154,7 @@ export function ScreenDetails({
                 color: theme.colors.contentSecondary,
               })}
             >
-              {circle.location}
+              {event.duration} · Hosted by {event.host}
             </p>
           </section>
 
@@ -157,28 +164,7 @@ export function ScreenDetails({
                 margin: 0,
                 fontSize: "15px",
                 fontWeight: 700,
-              })}
-            >
-              Hosted by {circle.host}
-            </h2>
-            <p
-              className={css({
-                margin: "8px 0 0",
-                fontSize: "17px",
-                lineHeight: 1.5,
-                color: theme.colors.contentSecondary,
-              })}
-            >
-              “{circle.hostNote}”
-            </p>
-          </section>
-
-          <section className={css({ marginTop: "22px" })}>
-            <h2
-              className={css({
-                margin: 0,
-                fontSize: "15px",
-                fontWeight: 700,
+                color: theme.colors.contentPrimary,
               })}
             >
               What to expect
@@ -194,23 +180,11 @@ export function ScreenDetails({
                 gap: "8px",
               })}
             >
-              {circle.whatToExpect.map((item) => (
+              {event.whatToExpect.map((item) => (
                 <li key={item}>{item}</li>
               ))}
             </ul>
           </section>
-
-          <p
-            className={css({
-              margin: "22px 0 0",
-              fontSize: "16px",
-              lineHeight: 1.45,
-              color: theme.colors.contentTertiary,
-              fontStyle: "italic",
-            })}
-          >
-            {circle.tone}
-          </p>
         </div>
       </div>
 
@@ -221,9 +195,8 @@ export function ScreenDetails({
           right: 0,
           bottom: 0,
           padding: "12px 16px calc(12px + env(safe-area-inset-bottom, 0px))",
-          backgroundImage: `linear-gradient(180deg, transparent, ${theme.colors.backgroundPrimary} 28%)`,
-          borderTop: `1px solid ${theme.colors.borderOpaque}`,
           backgroundColor: theme.colors.backgroundPrimary,
+          borderTop: `1px solid ${theme.colors.borderOpaque}`,
         })}
       >
         {joinError && (
@@ -238,31 +211,12 @@ export function ScreenDetails({
             {joinError}
           </p>
         )}
-        <Button
-          onClick={onJoin}
-          isLoading={joining}
-          overrides={{
-            BaseButton: {
-              style: {
-                width: "100%",
-                minHeight: "52px",
-                backgroundColor: theme.colors.brandBackgroundPrimary,
-                color: theme.colors.brandContentOnPrimary,
-                fontSize: "17px",
-                fontWeight: 700,
-                borderTopLeftRadius: "14px",
-                borderTopRightRadius: "14px",
-                borderBottomLeftRadius: "14px",
-                borderBottomRightRadius: "14px",
-                ":hover": {
-                  backgroundColor: theme.colors.accent600,
-                },
-              },
-            },
-          }}
+        <PrimaryButton
+          onClick={joined ? onEnterGathering : onJoin}
+          loading={joining}
         >
-          Join Circle
-        </Button>
+          {joined ? "Enter gathering" : "Join event"}
+        </PrimaryButton>
       </div>
     </div>
   );

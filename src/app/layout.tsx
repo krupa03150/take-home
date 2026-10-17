@@ -4,9 +4,9 @@ import "@/styles/uber-move.css";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Common Ground — Recurring circles that feel familiar",
+  title: "Common Ground — Virtual community events that feel familiar",
   description:
-    "Mobile-first Common Ground: find interest circles that meet again next week. Built with Uber Base Web and Uber Move.",
+    "Mobile-first Common Ground: sign up, set up your profile, and join virtual community events. Built with Uber Base Web and Uber Move.",
 };
 
 export const viewport: Viewport = {

@@ -3,43 +3,51 @@
 import { useStyletron } from "baseui";
 import type { AppScreen } from "@/lib/app-nav";
 
-const copy: Record<AppScreen, { title: string; body: string }[]> = {
-  explore: [
+const copy: Partial<Record<AppScreen, { title: string; body: string }[]>> = {
+  landing: [
     {
-      title: "Discovery without a dashboard",
-      body: "One vertical feed of recurring circles — interest, cadence, and membership count — so Eleanor can choose in a single thumb scroll.",
-    },
-    {
-      title: "Edge-state switches",
-      body: "Ready / Loading / Empty / Error chips let reviewers prove resilience without leaving the phone chrome.",
+      title: "Brand-first splash",
+      body: "Common Ground leads; Sign up / Sign in are the only jobs on the first screen.",
     },
   ],
-  details: [
+  auth: [
     {
-      title: "Sticky Join",
-      body: "Primary CTA stays pinned above the home indicator with a 52px hit target while the story scrolls underneath.",
-    },
-    {
-      title: "Host voice",
-      body: "A short host note and concrete expectations reduce first-visit anxiety before commitment.",
+      title: "Mock local auth",
+      body: "Credentials stay in localStorage — enough for a reviewable flow without a backend.",
     },
   ],
-  welcome: [
+  setup: [
     {
-      title: "Membership as a moment",
-      body: "Full-screen confirmation names Eleanor and the next gathering so joining feels like arrival, not a settings toggle.",
+      title: "Lightweight profile",
+      body: "Name, age, hobby, and interests unlock a ranked virtual events feed.",
+    },
+  ],
+  feed: [
+    {
+      title: "Virtual events",
+      body: "Seeded locally; reviewers can create new events that persist on this device.",
+    },
+    {
+      title: "Edge states",
+      body: "Ready / Loading / Empty / Error chips prove resilience without leaving the phone.",
+    },
+  ],
+  event: [
+    {
+      title: "Sticky join",
+      body: "Primary CTA stays pinned above the home indicator while the story scrolls.",
     },
   ],
   gathering: [
     {
-      title: "Large call controls",
-      body: "64px circular controls favor touch accuracy over dense desktop toolbars during a simulated group call.",
+      title: "Arrival moment",
+      body: "A short simulated call makes joining feel like showing up, not a checkbox.",
     },
   ],
-  reconnect: [
+  profile: [
     {
-      title: "Familiarity loop",
-      body: "Known faces + next week’s time close the product loop: belonging compounds when the same people return.",
+      title: "Belonging compounds",
+      body: "Friends made + events attended close the loop after Eleanor leaves a gathering.",
     },
   ],
 };
@@ -48,20 +56,14 @@ type Props = { screen: AppScreen };
 
 export function DesignAnnotations({ screen }: Props) {
   const [css, theme] = useStyletron();
-  const items = copy[screen];
+  const items = copy[screen] ?? [];
 
   return (
     <aside
       aria-label="Design annotations for reviewers"
-      className={css({
-        display: "none",
-        width: "280px",
-        flexShrink: 0,
+      className={`cg-annotations ${css({
         color: theme.colors.contentInverseSecondary,
-        "@media screen and (min-width: 960px)": {
-          display: "block",
-        },
-      })}
+      })}`}
     >
       <p
         className={css({

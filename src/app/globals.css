@@ -87,6 +87,40 @@ a {
   }
 }
 
+/* Layout fallbacks so desktop stage never collapses to raw document flow
+   if Styletron is momentarily unavailable. */
+.cg-stage {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  gap: 36px;
+  width: 100%;
+}
+
+.cg-annotations {
+  display: none;
+  width: 280px;
+  flex-shrink: 0;
+}
+
+@media (min-width: 960px) {
+  .cg-annotations {
+    display: block;
+  }
+}
+
+.cg-desktop-label {
+  display: none;
+  text-align: center;
+  max-width: 420px;
+}
+
+@media (min-width: 481px) {
+  .cg-desktop-label {
+    display: block;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

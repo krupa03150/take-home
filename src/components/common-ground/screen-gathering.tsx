@@ -1,177 +1,104 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useStyletron } from "baseui";
 import { Heading, HeadingLevel } from "baseui/heading";
-import type { Circle } from "@/lib/data";
-import { participants } from "@/lib/data";
+import type { CommunityEvent } from "@/lib/data";
+import { PrimaryButton, SecondaryButton } from "@/components/common-ground/ui";
 
 type Props = {
-  circle: Circle;
+  event: CommunityEvent;
+  userName: string;
   onLeave: () => void;
 };
 
-export function ScreenGathering({ circle, onLeave }: Props) {
+const tiles = [
+  { name: "Maya", tint: "#C9E4D8" },
+  { name: "Sam", tint: "#F0D9C8" },
+  { name: "Lee", tint: "#E2D6F0" },
+  { name: "You", tint: "#F5E6B8" },
+];
+
+export function ScreenGathering({ event, userName, onLeave }: Props) {
   const [css, theme] = useStyletron();
-  const [muted, setMuted] = useState(false);
-  const [cameraOff, setCameraOff] = useState(false);
-  const [connecting, setConnecting] = useState(true);
-
-  useEffect(() => {
-    const t = window.setTimeout(() => setConnecting(false), 900);
-    return () => window.clearTimeout(t);
-  }, []);
-
-  const control = (active?: boolean) =>
-    css({
-      minHeight: "64px",
-      minWidth: "64px",
-      borderRadius: "999px",
-      border: "none",
-      backgroundColor: active
-        ? theme.colors.contentInversePrimary
-        : "rgba(255,251,245,0.14)",
-      color: active
-        ? theme.colors.contentPrimary
-        : theme.colors.contentInversePrimary,
-      fontSize: "13px",
-      fontWeight: 700,
-      cursor: "pointer",
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      justifyContent: "center",
-      gap: "2px",
-      fontFamily: theme.typography.LabelMedium.fontFamily,
-      ":focus-visible": {
-        outline: `2px solid ${theme.colors.accent200}`,
-        outlineOffset: "3px",
-      },
-    });
 
   return (
     <div
       className={css({
+        height: "100%",
         display: "flex",
         flexDirection: "column",
-        height: "100%",
         backgroundColor: theme.colors.backgroundInversePrimary,
         color: theme.colors.contentInversePrimary,
+        paddingTop: "calc(16px + env(safe-area-inset-top, 0px))",
+        paddingBottom: "calc(16px + env(safe-area-inset-bottom, 0px))",
+        paddingLeft: "16px",
+        paddingRight: "16px",
       })}
     >
-      <header
+      <p
         className={css({
-          paddingTop: "calc(14px + env(safe-area-inset-top, 0px))",
-          paddingLeft: "18px",
-          paddingRight: "18px",
-          paddingBottom: "10px",
+          margin: 0,
+          fontSize: "13px",
+          fontWeight: 700,
+          letterSpacing: "0.06em",
+          textTransform: "uppercase",
+          color: theme.colors.accent200,
         })}
       >
-        <p
+        Live · Virtual
+      </p>
+      <HeadingLevel>
+        <Heading
+          styleLevel={5}
+          color="contentInversePrimary"
           className={css({
-            margin: 0,
-            fontSize: "13px",
-            fontWeight: 600,
-            color: theme.colors.contentInverseSecondary,
+            marginTop: "6px !important",
+            marginBottom: "0 !important",
+            color: theme.colors.contentInversePrimary,
           })}
         >
-          Live gathering
-        </p>
-        <HeadingLevel>
-          <Heading
-            styleLevel={5}
-            color="contentInversePrimary"
-            className={css({
-              marginTop: "4px !important",
-              marginBottom: "0 !important",
-              color: `${theme.colors.contentInversePrimary} !important`,
-            })}
-          >
-            {circle.name}
-          </Heading>
-        </HeadingLevel>
-      </header>
+          {event.title}
+        </Heading>
+      </HeadingLevel>
+      <p
+        className={css({
+          margin: "6px 0 0",
+          fontSize: "15px",
+          color: theme.colors.contentInverseSecondary,
+        })}
+      >
+        {userName}, you’re in with {event.attendees} others
+      </p>
 
       <div
         className={css({
           flex: 1,
-          padding: "8px 12px",
           display: "grid",
           gridTemplateColumns: "1fr 1fr",
-          gap: "8px",
+          gap: "10px",
+          marginTop: "18px",
+          marginBottom: "18px",
           minHeight: 0,
         })}
       >
-        {connecting ? (
+        {tiles.map((tile) => (
           <div
-            role="status"
+            key={tile.name}
             className={css({
-              gridColumn: "1 / -1",
+              borderRadius: "16px",
+              backgroundColor: tile.tint,
+              color: theme.colors.contentPrimary,
               display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: "17px",
-              color: theme.colors.contentInverseSecondary,
+              alignItems: "flex-end",
+              padding: "12px",
+              fontWeight: 700,
+              fontSize: "15px",
+              minHeight: "120px",
             })}
           >
-            Connecting you to the kitchen…
+            {tile.name === "You" ? userName.split(" ")[0] : tile.name}
           </div>
-        ) : (
-          <>
-            {[
-              { name: "You", note: cameraOff ? "Camera off" : "Eleanor" },
-              ...participants.slice(0, 3).map((p) => ({
-                name: p.name,
-                note: p.note.split("·")[0].trim(),
-              })),
-            ].map((tile) => (
-              <div
-                key={tile.name}
-                className={css({
-                  borderRadius: "16px",
-                  backgroundColor: theme.colors.backgroundInverseSecondary,
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "flex-end",
-                  padding: "12px",
-                  minHeight: "120px",
-                  position: "relative",
-                  overflow: "hidden",
-                })}
-              >
-                <div
-                  aria-hidden
-                  className={css({
-                    position: "absolute",
-                    inset: 0,
-                    backgroundImage: `radial-gradient(circle at 30% 20%, ${theme.colors.accent400}55, transparent 55%)`,
-                    opacity: 0.7,
-                  })}
-                />
-                <div className={css({ position: "relative" })}>
-                  <p
-                    className={css({
-                      margin: 0,
-                      fontSize: "16px",
-                      fontWeight: 700,
-                    })}
-                  >
-                    {tile.name}
-                  </p>
-                  <p
-                    className={css({
-                      margin: "2px 0 0",
-                      fontSize: "13px",
-                      color: theme.colors.contentInverseSecondary,
-                    })}
-                  >
-                    {tile.note}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </>
-        )}
+        ))}
       </div>
 
       <div
@@ -179,50 +106,39 @@ export function ScreenGathering({ circle, onLeave }: Props) {
           display: "flex",
           justifyContent: "center",
           gap: "16px",
-          padding: "16px 16px calc(20px + env(safe-area-inset-bottom, 0px))",
+          marginBottom: "16px",
         })}
       >
-        <button
-          type="button"
-          className={control(muted)}
-          aria-pressed={muted}
-          onClick={() => setMuted((v) => !v)}
-        >
-          <span aria-hidden className={css({ fontSize: "18px" })}>{muted ? "×" : "♩"}</span>
-          {muted ? "Unmute" : "Mute"}
-        </button>
-        <button
-          type="button"
-          className={control(cameraOff)}
-          aria-pressed={cameraOff}
-          onClick={() => setCameraOff((v) => !v)}
-        >
-          <span aria-hidden className={css({ fontSize: "16px" })}>{cameraOff ? "○" : "▣"}</span>
-          {cameraOff ? "Cam on" : "Cam off"}
-        </button>
-        <button
-          type="button"
-          onClick={onLeave}
-          className={css({
-            minHeight: "64px",
-            minWidth: "88px",
-            borderRadius: "999px",
-            border: "none",
-            backgroundColor: theme.colors.negative,
-            color: theme.colors.contentInversePrimary,
-            fontSize: "14px",
-            fontWeight: 700,
-            cursor: "pointer",
-            fontFamily: theme.typography.LabelMedium.fontFamily,
-            ":focus-visible": {
-              outline: `2px solid ${theme.colors.accent200}`,
-              outlineOffset: "3px",
-            },
-          })}
-        >
-          Leave
-        </button>
+        {["Mute", "Cam", "Hand"].map((label) => (
+          <button
+            key={label}
+            type="button"
+            aria-label={label}
+            className={css({
+              width: "64px",
+              height: "64px",
+              borderRadius: "32px",
+              border: "none",
+              backgroundColor: theme.colors.backgroundInverseSecondary,
+              color: theme.colors.contentInversePrimary,
+              fontSize: "13px",
+              fontWeight: 700,
+              cursor: "pointer",
+              fontFamily: theme.typography.LabelMedium.fontFamily,
+              ":focus-visible": {
+                outline: `2px solid ${theme.colors.accent200}`,
+                outlineOffset: "2px",
+              },
+            })}
+          >
+            {label}
+          </button>
+        ))}
       </div>
+
+      <PrimaryButton onClick={onLeave}>Leave & go to profile</PrimaryButton>
+      <div className={css({ height: "10px" })} />
+      <SecondaryButton onClick={onLeave}>Stay listed as joined</SecondaryButton>
     </div>
   );
 }

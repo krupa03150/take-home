@@ -2,11 +2,7 @@
 
 import { useEffect, useState, useTransition } from "react";
 import { useStyletron } from "baseui";
-import {
-  showsBottomNav,
-  type AppScreen,
-  type AuthMode,
-} from "@/lib/app-nav";
+import { showsBottomNav, type AppScreen } from "@/lib/app-nav";
 import { seedFriends, type CommunityEvent } from "@/lib/data";
 import { circleMembers } from "@/lib/circle";
 import {
@@ -22,7 +18,6 @@ import { BottomNav } from "@/components/common-ground/bottom-nav";
 import { RationalePanel } from "@/components/common-ground/rationale-panel";
 import { HoverNotes } from "@/components/common-ground/hover-notes";
 import { ScreenLanding } from "@/components/common-ground/screen-landing";
-import { ScreenAuth } from "@/components/common-ground/screen-auth";
 import { ScreenSetup } from "@/components/common-ground/screen-setup";
 import { ScreenFeed } from "@/components/common-ground/screen-feed";
 import { ScreenEvent } from "@/components/common-ground/screen-event";
@@ -46,7 +41,6 @@ export function CommonGroundApp() {
   const [hydrated, setHydrated] = useState(false);
   const [session, setSession] = useState<SessionState>(() => loadSession());
   const [screen, setScreen] = useState<AppScreen>("landing");
-  const [authMode, setAuthMode] = useState<AuthMode>("signup");
   const [eventId, setEventId] = useState<string | null>(null);
   const [joining, setJoining] = useState(false);
   const [joinError, setJoinError] = useState<string | null>(null);
@@ -87,47 +81,26 @@ export function CommonGroundApp() {
     });
   };
 
-  const handleSignUp = (input: {
-    name: string;
-    email: string;
-    password: string;
-  }): string | null => {
-    const email = input.email.trim().toLowerCase();
-    const existing = loadSession();
-    if (
-      email &&
-      existing.user &&
-      existing.user.email &&
-      existing.user.email === email
-    ) {
-      return "That email already has an account — try signing in.";
-    }
-    const user = createEmptyProfile(email, input.password, input.name);
-    setSession((prev) => ({ ...prev, user }));
-    go("setup");
-    return null;
-  };
-
-  const handleContinueWithoutAccount = (name: string) => {
-    const user = createEmptyProfile("", "", name.trim() || "Friend");
+  /** Sign up and Sign in both use the short one-question-per-screen path. */
+  const beginOnboarding = () => {
+    const user = createEmptyProfile("", "", "");
     setSession((prev) => ({ ...prev, user }));
     go("setup");
   };
 
-  const handleSignIn = (email: string, password: string): string | null => {
+  const handleSignIn = () => {
     const existing = loadSession();
-    if (!existing.user || !existing.user.email) {
-      return "No saved account on this phone yet — continue without an account, or sign up with an optional email.";
+    if (existing.user?.setupComplete) {
+      setSession(existing);
+      go("feed");
+      return;
     }
-    if (existing.user.email !== email.trim().toLowerCase()) {
-      return "No account for that email on this device.";
+    if (existing.user && !existing.user.setupComplete) {
+      setSession(existing);
+      go("setup");
+      return;
     }
-    if (existing.user.password !== password) {
-      return "Password doesn’t match. (Mock auth — check what you typed.)";
-    }
-    setSession(existing);
-    go(existing.user.setupComplete ? "feed" : "setup");
-    return null;
+    beginOnboarding();
   };
 
   const handleSetupComplete = (profile: {
@@ -329,24 +302,8 @@ export function CommonGroundApp() {
             >
               {screen === "landing" && (
                 <ScreenLanding
-                  onSignUp={() => {
-                    setAuthMode("signup");
-                    go("auth");
-                  }}
-                  onSignIn={() => {
-                    setAuthMode("signin");
-                    go("auth");
-                  }}
-                />
-              )}
-              {screen === "auth" && (
-                <ScreenAuth
-                  mode={authMode}
-                  onModeChange={setAuthMode}
-                  onBack={() => go("landing")}
-                  onSignUp={handleSignUp}
+                  onSignUp={beginOnboarding}
                   onSignIn={handleSignIn}
-                  onContinueWithoutAccount={handleContinueWithoutAccount}
                 />
               )}
               {screen === "setup" && session.user && (

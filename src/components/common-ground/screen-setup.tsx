@@ -22,25 +22,23 @@ type Props = {
   onComplete: (profile: Profile) => void;
 };
 
-type Step = "name" | "age" | "hobby" | "interests";
+type Step = "name" | "interests" | "age";
 
-const STEPS: Step[] = ["name", "age", "hobby", "interests"];
+const STEPS: Step[] = ["name", "interests", "age"];
 
 export function ScreenSetup({ initialName = "", onComplete }: Props) {
   const [css, theme] = useStyletron();
   const [step, setStep] = useState<Step>("name");
   const [name, setName] = useState(initialName);
   const [age, setAge] = useState("");
-  const [hobby, setHobby] = useState("");
   const [interests, setInterests] = useState<string[]>([]);
 
-  const finish = (next?: Partial<Profile>) => {
-    const resolvedName = (next?.name ?? name).trim() || "Friend";
+  const finish = (overrides?: Partial<Profile>) => {
     onComplete({
-      name: resolvedName,
-      age: (next?.age ?? age).trim(),
-      hobby: (next?.hobby ?? hobby).trim(),
-      interests: next?.interests ?? interests,
+      name: (overrides?.name ?? name).trim() || "Friend",
+      age: (overrides?.age ?? age).trim(),
+      hobby: overrides?.hobby ?? "",
+      interests: overrides?.interests ?? interests,
     });
   };
 
@@ -63,27 +61,25 @@ export function ScreenSetup({ initialName = "", onComplete }: Props) {
 
   const stepMeta: Record<
     Step,
-    { title: string; why: string; skipLabel: string }
+    { title: string; why: string; skipLabel: string; continueLabel: string }
   > = {
     name: {
       title: "What should we call you?",
-      why: "Your name helps people in gatherings recognize you.",
+      why: "So people in gatherings can recognize you.",
       skipLabel: "Skip",
-    },
-    age: {
-      title: "How old are you?",
-      why: "Age helps us suggest gatherings that fit your stage of life.",
-      skipLabel: "Skip",
-    },
-    hobby: {
-      title: "What’s a hobby you enjoy?",
-      why: "A hobby tells us the kind of time you like to spend with others.",
-      skipLabel: "Skip",
+      continueLabel: "Continue",
     },
     interests: {
       title: "What interests you?",
-      why: "Interests shape your feed so events feel familiar, not random.",
-      skipLabel: "Skip for now",
+      why: "So your feed shows gatherings that feel familiar.",
+      skipLabel: "Skip",
+      continueLabel: "Continue",
+    },
+    age: {
+      title: "How old are you?",
+      why: "So we can suggest gatherings that fit.",
+      skipLabel: "Skip",
+      continueLabel: "See my feed",
     },
   };
 
@@ -95,33 +91,34 @@ export function ScreenSetup({ initialName = "", onComplete }: Props) {
       <p
         className={css({
           margin: 0,
-          fontSize: "15px",
+          fontSize: "16px",
           fontWeight: 700,
-          letterSpacing: "0.04em",
-          textTransform: "uppercase",
           color: theme.colors.accent600,
         })}
+        aria-live="polite"
       >
-        Profile setup · {stepIndex} of {STEPS.length}
+        Step {stepIndex} of {STEPS.length}
       </p>
+
       <HeadingLevel>
         <Heading
           styleLevel={3}
           color="contentPrimary"
           className={css({
-            marginTop: "8px !important",
+            marginTop: "12px !important",
             marginBottom: "0 !important",
           })}
         >
           {meta.title}
         </Heading>
       </HeadingLevel>
+
       <p
         className={css({
           margin: "10px 0 0",
           fontSize: "18px",
           color: theme.colors.contentSecondary,
-          lineHeight: 1.45,
+          lineHeight: 1.4,
         })}
       >
         {meta.why}
@@ -129,18 +126,14 @@ export function ScreenSetup({ initialName = "", onComplete }: Props) {
 
       <form
         className={css({
-          marginTop: "24px",
+          marginTop: "28px",
           display: "grid",
-          gap: "18px",
-          paddingBottom: "24px",
+          gap: "20px",
         })}
         onSubmit={(e) => {
           e.preventDefault();
           if (step === "name") {
-            const resolved = name.trim() || "Friend";
-            setName(resolved);
-            goNext();
-            return;
+            setName(name.trim() || "Friend");
           }
           goNext();
         }}
@@ -148,34 +141,11 @@ export function ScreenSetup({ initialName = "", onComplete }: Props) {
         {step === "name" && (
           <Field
             id="cg-name"
-            label="Name"
+            label="Your name"
             value={name}
             onChange={setName}
             autoComplete="name"
-            hint="Leave blank and we’ll use Friend — you can change it later."
-          />
-        )}
-
-        {step === "age" && (
-          <Field
-            id="cg-age"
-            label="Age"
-            optional
-            value={age}
-            onChange={setAge}
-            inputMode="numeric"
-            hint="Optional. We only use this to fit gatherings — never shown as a public number."
-          />
-        )}
-
-        {step === "hobby" && (
-          <Field
-            id="cg-hobby"
-            label="Hobby"
-            optional
-            value={hobby}
-            onChange={setHobby}
-            hint="Optional. One thing you enjoy — baking, birds, books, anything."
+            hint="Leave blank and we’ll call you Friend."
           />
         )}
 
@@ -192,7 +162,7 @@ export function ScreenSetup({ initialName = "", onComplete }: Props) {
                 fontSize: "16px",
                 fontWeight: 700,
                 color: theme.colors.contentPrimary,
-                marginBottom: "6px",
+                marginBottom: "10px",
               })}
             >
               Interests{" "}
@@ -205,21 +175,11 @@ export function ScreenSetup({ initialName = "", onComplete }: Props) {
                 Optional
               </span>
             </legend>
-            <p
-              className={css({
-                margin: "0 0 12px",
-                fontSize: "17px",
-                lineHeight: 1.4,
-                color: theme.colors.contentSecondary,
-              })}
-            >
-              Tap any that sound like you. You can skip and still see events.
-            </p>
             <div
               className={css({
                 display: "flex",
                 flexWrap: "wrap",
-                gap: "8px",
+                gap: "10px",
               })}
             >
               {INTEREST_OPTIONS.map((interest) => {
@@ -262,22 +222,29 @@ export function ScreenSetup({ initialName = "", onComplete }: Props) {
           </fieldset>
         )}
 
+        {step === "age" && (
+          <Field
+            id="cg-age"
+            label="Age"
+            optional
+            value={age}
+            onChange={setAge}
+            inputMode="numeric"
+            hint="Optional — never shown as a public number."
+          />
+        )}
+
         <ActionRow
           skipLabel={meta.skipLabel}
           onSkip={() => {
             if (step === "name") {
-              const resolved = name.trim() || "Friend";
-              setName(resolved);
+              setName(name.trim() || "Friend");
               goNext();
-              return;
-            }
-            if (step === "interests") {
-              finish();
               return;
             }
             goNext();
           }}
-          continueLabel={step === "interests" ? "See my feed" : "Continue"}
+          continueLabel={meta.continueLabel}
           continueType="submit"
         />
       </form>

@@ -7,8 +7,8 @@ const FIGJAM =
 
 const features = [
   {
-    title: "Landing → sign up",
-    why: "One job and a low hurdle so Eleanor starts without a long form — MVP auth we can ship locally; business needs her inside the network.",
+    title: "Landing → one-step onboarding",
+    why: "One question per screen (name → interests → age), Skip anytime — no email/password wall. Business needs her inside the network fast.",
   },
   {
     title: "Interests in setup",

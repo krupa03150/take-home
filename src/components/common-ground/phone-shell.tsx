@@ -17,7 +17,7 @@ export function PhoneShell({ children, statusTime = "9:41" }: Props) {
       className={css({
         position: "relative",
         width: "100%",
-        maxWidth: "430px",
+        maxWidth: "360px",
         flexShrink: 0,
         "@media screen and (max-width: 480px)": {
           maxWidth: "100%",
@@ -30,12 +30,12 @@ export function PhoneShell({ children, statusTime = "9:41" }: Props) {
       <div
         className={css({
           position: "relative",
-          borderRadius: "54px",
-          padding: "12px",
+          borderRadius: "46px",
+          padding: "10px",
           backgroundImage:
             "linear-gradient(145deg, #3a3a3c 0%, #1c1c1e 40%, #0a0a0a 100%)",
           boxShadow:
-            "0 0 0 1px rgba(255,255,255,0.08) inset, 0 28px 80px rgba(0,0,0,0.55), 0 8px 24px rgba(0,0,0,0.35)",
+            "0 0 0 1px rgba(255,255,255,0.08) inset, 0 22px 64px rgba(0,0,0,0.5), 0 6px 18px rgba(0,0,0,0.3)",
           "@media screen and (max-width: 480px)": {
             borderRadius: 0,
             padding: 0,
@@ -104,11 +104,11 @@ export function PhoneShell({ children, statusTime = "9:41" }: Props) {
         <div
           className={css({
             position: "relative",
-            width: "393px",
+            width: "340px",
             maxWidth: "100%",
-            height: "min(852px, calc(100dvh - 48px))",
-            minHeight: "640px",
-            borderRadius: "44px",
+            height: "min(736px, calc(100dvh - 40px))",
+            minHeight: "560px",
+            borderRadius: "38px",
             overflow: "hidden",
             backgroundColor: theme.colors.backgroundPrimary,
             color: theme.colors.contentPrimary,

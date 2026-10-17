@@ -47,8 +47,8 @@ export function RationalePanel({ open = true, onClose, compact }: Props) {
     <>
       <p
         className={css({
-          margin: "0 0 8px",
-          fontSize: "12px",
+          margin: "0 0 6px",
+          fontSize: "10px",
           fontWeight: 700,
           letterSpacing: "0.08em",
           textTransform: "uppercase",
@@ -59,9 +59,9 @@ export function RationalePanel({ open = true, onClose, compact }: Props) {
       </p>
       <p
         className={css({
-          margin: "0 0 16px",
-          fontSize: "14px",
-          lineHeight: 1.45,
+          margin: "0 0 12px",
+          fontSize: "12px",
+          lineHeight: 1.4,
           color: theme.colors.contentInverseSecondary,
         })}
       >
@@ -74,7 +74,7 @@ export function RationalePanel({ open = true, onClose, compact }: Props) {
           padding: 0,
           listStyle: "none",
           display: "grid",
-          gap: "14px",
+          gap: "10px",
         })}
       >
         {features.map((f, i) => (
@@ -82,7 +82,7 @@ export function RationalePanel({ open = true, onClose, compact }: Props) {
             <p
               className={css({
                 margin: 0,
-                fontSize: "15px",
+                fontSize: "13px",
                 fontWeight: 700,
                 color: theme.colors.contentInversePrimary,
               })}
@@ -91,9 +91,9 @@ export function RationalePanel({ open = true, onClose, compact }: Props) {
             </p>
             <p
               className={css({
-                margin: "4px 0 0",
-                fontSize: "13px",
-                lineHeight: 1.45,
+                margin: "3px 0 0",
+                fontSize: "11px",
+                lineHeight: 1.4,
                 color: theme.colors.contentInverseSecondary,
               })}
             >
@@ -104,9 +104,9 @@ export function RationalePanel({ open = true, onClose, compact }: Props) {
       </ol>
       <p
         className={css({
-          margin: "18px 0 0",
-          fontSize: "13px",
-          lineHeight: 1.4,
+          margin: "12px 0 0",
+          fontSize: "11px",
+          lineHeight: 1.35,
           color: theme.colors.contentInverseTertiary,
         })}
       >
@@ -189,11 +189,13 @@ export function RationalePanel({ open = true, onClose, compact }: Props) {
     <aside
       aria-label="Design rationale for reviewers"
       className={`cg-annotations ${css({
-        width: "300px",
-        maxHeight: "min(852px, calc(100dvh - 48px))",
+        width: "220px",
+        maxHeight: "min(720px, calc(100dvh - 32px))",
         overflowY: "auto",
         color: theme.colors.contentInverseSecondary,
-        paddingRight: "4px",
+        padding: "4px 2px 4px 0",
+        flexShrink: 0,
+        alignSelf: "center",
       })}`}
     >
       {body}

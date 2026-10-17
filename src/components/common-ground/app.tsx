@@ -232,8 +232,8 @@ export function CommonGroundApp() {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        padding: "16px",
-        gap: "20px",
+        padding: "12px",
+        gap: "0",
         fontSize: prefs.largeText ? "19px" : "18px",
         "@media screen and (max-width: 480px)": {
           padding: 0,
@@ -244,36 +244,6 @@ export function CommonGroundApp() {
         },
       })}
     >
-      <div
-        className={`cg-desktop-label ${css({
-          textAlign: "center",
-          maxWidth: "420px",
-        })}`}
-      >
-        <p
-          className={css({
-            margin: 0,
-            fontSize: "13px",
-            fontWeight: 700,
-            letterSpacing: "0.08em",
-            textTransform: "uppercase",
-            color: theme.colors.accent200,
-          })}
-        >
-          Common Ground
-        </p>
-        <p
-          className={css({
-            margin: "8px 0 0",
-            fontSize: "15px",
-            color: theme.colors.contentInverseSecondary,
-          })}
-        >
-          Mobile-first iPhone preview · 393×852 — rationale stays outside the
-          phone
-        </p>
-      </div>
-
       {/* Narrow viewport: Why this outside Eleanor’s nav */}
       <button
         type="button"
@@ -293,8 +263,6 @@ export function CommonGroundApp() {
           "@media screen and (max-width: 900px)": {
             display: "inline-flex",
             alignItems: "center",
-          },
-          "@media screen and (max-width: 480px)": {
             position: "fixed",
             top: "calc(10px + env(safe-area-inset-top, 0px))",
             right: "12px",
@@ -458,9 +426,10 @@ export function CommonGroundApp() {
             )}
           </div>
         </PhoneShell>
+
+        <HoverNotes />
       </div>
 
-      <HoverNotes />
       <RationalePanel
         compact
         open={whyOpen}

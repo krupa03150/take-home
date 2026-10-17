@@ -60,6 +60,7 @@ export function ScreenFeed({
   const [dateFilter, setDateFilter] = useState<DateSelection>("any");
   const [draftDate, setDraftDate] = useState<DateSelection>("any");
   const [filterOpen, setFilterOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const [creating, setCreating] = useState(false);
   const [title, setTitle] = useState("");
@@ -75,6 +76,8 @@ export function ScreenFeed({
       ? null
       : (dateChips.find((c) => c.id === dateFilter) ?? null);
 
+  const searchNeedle = searchQuery.trim().toLowerCase();
+
   const visible = useMemo(() => {
     return events
       .filter((event) => {
@@ -85,6 +88,18 @@ export function ScreenFeed({
         if (dateFilter === "any" || !activeDateChip) return true;
         return activeDateChip.match(event);
       })
+      .filter((event) => {
+        if (!searchNeedle) return true;
+        const haystack = [
+          event.title,
+          event.interest,
+          event.description,
+          event.host,
+        ]
+          .join(" ")
+          .toLowerCase();
+        return haystack.includes(searchNeedle);
+      })
       .sort((a, b) => {
         const aMatch = interests.includes(a.interest) ? 0 : 1;
         const bMatch = interests.includes(b.interest) ? 0 : 1;
@@ -92,7 +107,14 @@ export function ScreenFeed({
         if (a.dayOffset !== b.dayOffset) return a.dayOffset - b.dayOffset;
         return a.timeLabel.localeCompare(b.timeLabel);
       });
-  }, [events, interestChip, dateFilter, activeDateChip, interests]);
+  }, [
+    events,
+    interestChip,
+    dateFilter,
+    activeDateChip,
+    interests,
+    searchNeedle,
+  ]);
 
   const openDateFilter = () => {
     setDraftDate(dateFilter);
@@ -120,6 +142,9 @@ export function ScreenFeed({
   };
 
   const emptyLabel = () => {
+    if (searchNeedle) {
+      return `No events match “${searchQuery.trim()}”`;
+    }
     const interestLabel =
       interestChip === "all" ? "your interests" : interestChip.toLowerCase();
     if (dateFilter === "any") return `No ${interestLabel} events yet`;
@@ -262,13 +287,71 @@ export function ScreenFeed({
         </button>
       </div>
 
+      <div
+        className={css({
+          marginTop: "18px",
+        })}
+        data-annotate="feed-search"
+      >
+        <label
+          htmlFor="cg-feed-search"
+          className={css({
+            display: "block",
+            fontSize: "16px",
+            fontWeight: 700,
+            color: theme.colors.contentPrimary,
+            marginBottom: "6px",
+          })}
+        >
+          Search events
+        </label>
+        <p
+          id="cg-feed-search-hint"
+          className={css({
+            margin: "0 0 8px",
+            fontSize: "16px",
+            lineHeight: 1.35,
+            color: theme.colors.contentSecondary,
+          })}
+        >
+          Find a gathering by name or interest.
+        </p>
+        <input
+          id="cg-feed-search"
+          type="search"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          aria-describedby="cg-feed-search-hint"
+          autoComplete="off"
+          enterKeyHint="search"
+          className={css({
+            width: "100%",
+            minHeight: "52px",
+            borderRadius: "14px",
+            border: `1.5px solid ${theme.colors.borderOpaque}`,
+            backgroundColor: theme.colors.backgroundPrimary,
+            color: theme.colors.contentPrimary,
+            fontSize: "18px",
+            paddingLeft: "14px",
+            paddingRight: "14px",
+            fontFamily: theme.typography.ParagraphMedium.fontFamily,
+            boxSizing: "border-box",
+            ":focus-visible": {
+              outline: `2px solid ${theme.colors.accent}`,
+              outlineOffset: "1px",
+              borderColor: theme.colors.accent,
+            },
+          })}
+        />
+      </div>
+
       {/* Interest chips + date filter */}
       <div
         className={css({
           display: "flex",
           alignItems: "center",
           gap: "8px",
-          marginTop: "18px",
+          marginTop: "14px",
           marginBottom: "14px",
         })}
       >
@@ -403,16 +486,28 @@ export function ScreenFeed({
               lineHeight: 1.45,
             })}
           >
-            Try another interest, clear the date filter, or tap + to create a
-            virtual gathering.
+            {searchNeedle
+              ? "Try a different word, or clear search to see more gatherings."
+              : "Try another interest, clear the date filter, or tap + to create a virtual gathering."}
           </p>
-          {dateFilter !== "any" && (
-            <div className={css({ marginTop: "14px" })}>
+          <div
+            className={css({
+              marginTop: "14px",
+              display: "grid",
+              gap: "10px",
+            })}
+          >
+            {searchNeedle ? (
+              <SecondaryButton onClick={() => setSearchQuery("")}>
+                Clear search
+              </SecondaryButton>
+            ) : null}
+            {dateFilter !== "any" && (
               <SecondaryButton onClick={clearDateFilter}>
                 Clear date filter
               </SecondaryButton>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       ) : (
         <div

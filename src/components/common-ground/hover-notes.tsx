@@ -8,13 +8,17 @@ const NOTES: Record<string, { title: string; body: string }> = {
     title: "Why events look like this",
     body: "Photo + interest + relative date + virtual label: she recognizes the activity before she commits. Assumption: shared interests + no travel. Good bet because the barrier is getting there — we can ship a local catalog with filters, not a venue network.",
   },
+  "feed-search": {
+    title: "Why search is here",
+    body: "She finds a gathering she already cares about without scrolling — still the shared-interest bet, just faster.",
+  },
   "nav-circle": {
     title: "Why My Circle exists",
     body: "Familiar faces, showing up next week (“I’ll be there”), and a quiet message to someone she already knows — relationship, not a social graph. Engineering: one screen + local threads. Business: recurring attendance → retention.",
   },
   "circle-person": {
-    title: "Where a gathering becomes a person",
-    body: "The face, the shared event, and Message are how familiarity starts — she’ll reach out because she already met them, not because it’s a social network. Business: familiar members who message and come back next week are the growth loop (connection → retention + word of mouth). Thin MVP: one local thread, high meaning.",
+    title: "Defining moment for a relationship",
+    body: "This is where a gathering becomes a person she knows — the face, the shared event, and Message. Assumption: she’ll reach out because she already met them, not because it’s a social network. Business: familiar members who message and return next week drive connection → retention and word of mouth. Thin MVP (one local thread), high meaning.",
   },
   "nav-profile": {
     title: "Why profile shows interests",
@@ -139,8 +143,8 @@ export function HoverNotes() {
             lineHeight: 1.4,
           })}
         >
-          Hover a person in My Circle, an event card, or Profile to see the
-          note here.
+          Hover search, a person in My Circle, an event card, or Profile to
+          see the note here.
         </div>
       )}
     </aside>

@@ -1,12 +1,19 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Providers } from "@/components/providers";
 import "@/styles/uber-move.css";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Alto — Ship take-homes that feel like products",
+  title: "Common Ground — Recurring circles that feel familiar",
   description:
-    "Alto is a polished single-page demo kit for take-home interviews. Brand-first landing on Uber Base Web.",
+    "Mobile-first Common Ground: find interest circles that meet again next week. Built with Uber Base Web and Uber Move.",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: "#F3EDE4",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

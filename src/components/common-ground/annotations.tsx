@@ -3,51 +3,52 @@
 import { useStyletron } from "baseui";
 import type { AppScreen } from "@/lib/app-nav";
 
+/** Short, screen-specific lines from Krupa’s FigJam rationale. */
 const copy: Partial<Record<AppScreen, { title: string; body: string }[]>> = {
   landing: [
     {
-      title: "Brand-first splash",
-      body: "Common Ground leads; Sign up / Sign in are the only jobs on the first screen.",
+      title: "One job: start",
+      body: "Discoverability is obvious; onboarding hurdles stay few. Sign up or sign in — that’s the only job on the first screen.",
     },
   ],
   auth: [
     {
-      title: "Mock local auth",
-      body: "Credentials stay in localStorage — enough for a reviewable flow without a backend.",
+      title: "Low hurdle in",
+      body: "Get Eleanor inside something familiar fast. Mock local auth keeps the path short for the prototype.",
     },
   ],
   setup: [
     {
-      title: "Lightweight profile",
-      body: "Name, age, hobby, and interests unlock a ranked virtual events feed.",
+      title: "Interests as the match",
+      body: "Name, age, hobby, interests — matching starts from what she cares about, not a profile that asks for everything.",
     },
   ],
   feed: [
     {
-      title: "Photo cards + day filters",
-      body: "Every event shows a photo. Today / Tomorrow / weekday / This weekend filter the feed; the funnel opens interest filters.",
+      title: "Today / Tomorrow + photos",
+      body: "Relative dates match how she plans. Photos make the activity recognizable before she commits.",
     },
     {
-      title: "65+ welcoming catalog",
-      body: "Walks, baking, book club, repair, music, gardening, memoir, chair yoga, and more — all virtual and local.",
+      title: "Interest filter — trip removed",
+      body: "Filter by what she wants. Activities lean 65+ because mobility removed the trip — the event still has to feel like hers.",
     },
   ],
   event: [
     {
-      title: "Sticky join",
-      body: "Primary CTA stays pinned above the home indicator while the story scrolls.",
+      title: "Know before you join",
+      body: "Show who and what first. Meeting strangers is uncomfortable; she wants to know what she’s walking into.",
     },
   ],
   gathering: [
     {
-      title: "Arrival moment",
-      body: "A short simulated call makes joining feel like showing up, not a checkbox.",
+      title: "Virtual, from home",
+      body: "The barrier is getting there. Every event is a call she can join without the trip across town.",
     },
   ],
   profile: [
     {
-      title: "Belonging compounds",
-      body: "Friends made + events attended close the loop after Eleanor leaves a gathering.",
+      title: "Reconnection loop",
+      body: "Friends she met + events she went to — familiarity is the reason to return and tell someone.",
     },
   ],
 };
@@ -111,6 +112,27 @@ export function DesignAnnotations({ screen }: Props) {
           </li>
         ))}
       </ol>
+      <p
+        className={css({
+          margin: "22px 0 0",
+          fontSize: "13px",
+          lineHeight: 1.4,
+          color: theme.colors.contentInverseTertiary,
+        })}
+      >
+        Full writeup in-app under Rationale ·{" "}
+        <a
+          href="https://www.figma.com/board/x67SZPFAjFQ28HnWdnpcyX/take-home-everlaw"
+          target="_blank"
+          rel="noopener noreferrer"
+          className={css({
+            color: theme.colors.accent200,
+            fontWeight: 700,
+          })}
+        >
+          FigJam
+        </a>
+      </p>
     </aside>
   );
 }

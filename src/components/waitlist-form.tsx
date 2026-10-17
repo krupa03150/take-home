@@ -1,13 +1,16 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
+import { useStyletron } from "baseui";
+import { Button } from "baseui/button";
+import { Input } from "baseui/input";
+import { FormControl } from "baseui/form-control";
+import { brand } from "@/lib/theme";
 
 type FormState = "idle" | "loading" | "success" | "error";
 
-export function WaitlistForm({ className }: { className?: string }) {
+export function WaitlistForm() {
+  const [css] = useStyletron();
   const [email, setEmail] = useState("");
   const [state, setState] = useState<FormState>("idle");
   const [message, setMessage] = useState("");
@@ -24,9 +27,7 @@ export function WaitlistForm({ className }: { className?: string }) {
 
     setState("loading");
     setMessage("");
-
     await new Promise((resolve) => setTimeout(resolve, 900));
-
     setState("success");
     setMessage(`You're on the list — we'll write ${trimmed} when seats open.`);
     setEmail("");
@@ -35,26 +36,56 @@ export function WaitlistForm({ className }: { className?: string }) {
   if (state === "success") {
     return (
       <div
-        className={cn(
-          "rounded-2xl border border-sea/25 bg-white/80 px-5 py-4 text-left shadow-[0_20px_60px_-40px_rgba(6,20,26,0.45)] backdrop-blur-sm",
-          className
-        )}
+        className={css({
+          maxWidth: "28rem",
+          padding: "1.1rem 1.25rem",
+          borderRadius: "1rem",
+          backgroundColor: "rgba(255,255,255,0.9)",
+          border: `1px solid rgba(31, 138, 122, 0.25)`,
+          boxShadow: "0 20px 60px -40px rgba(6,20,26,0.45)",
+          backdropFilter: "blur(8px)",
+        })}
         role="status"
         aria-live="polite"
       >
-        <p className="font-display text-lg font-semibold text-ink">
+        <p
+          className={css({
+            margin: 0,
+            fontFamily: "var(--font-syne), Syne, sans-serif",
+            fontSize: "1.125rem",
+            fontWeight: 700,
+            color: brand.ink,
+          })}
+        >
           You&apos;re in.
         </p>
-        <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+        <p
+          className={css({
+            margin: "0.35rem 0 0",
+            fontSize: "0.925rem",
+            lineHeight: 1.5,
+            color: "#3d5c58",
+          })}
+        >
           {message}
         </p>
         <Button
+          kind="tertiary"
           type="button"
-          variant="ghost"
-          className="mt-3 h-9 px-0 text-sea hover:bg-transparent hover:text-tide"
           onClick={() => {
             setState("idle");
             setMessage("");
+          }}
+          overrides={{
+            BaseButton: {
+              style: {
+                marginTop: "0.65rem",
+                paddingLeft: 0,
+                paddingRight: 0,
+                color: brand.sea,
+                ":hover": { backgroundColor: "transparent", color: brand.tide },
+              },
+            },
           }}
         >
           Add another email
@@ -66,69 +97,112 @@ export function WaitlistForm({ className }: { className?: string }) {
   return (
     <form
       onSubmit={onSubmit}
-      className={cn("w-full max-w-md text-left", className)}
       noValidate
+      className={css({ width: "100%", maxWidth: "28rem" })}
     >
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-stretch">
-        <label className="sr-only" htmlFor="waitlist-email">
-          Work email
-        </label>
-        <Input
-          id="waitlist-email"
-          type="email"
-          name="email"
-          autoComplete="email"
-          placeholder="you@studio.com"
-          value={email}
-          disabled={state === "loading"}
-          onChange={(event) => {
-            setEmail(event.target.value);
-            if (state === "error") {
-              setState("idle");
-              setMessage("");
-            }
-          }}
-          aria-invalid={state === "error"}
-          className="h-12 flex-1 rounded-xl border-white/20 bg-white/90 px-4 text-base text-ink shadow-[0_16px_40px_-28px_rgba(6,20,26,0.55)] placeholder:text-muted-foreground/80"
-        />
-        <Button
-          type="submit"
-          disabled={state === "loading"}
-          className="h-12 rounded-xl bg-sea px-5 text-base font-semibold text-foam hover:bg-sea/90"
-        >
-          {state === "loading" ? (
-            <span className="inline-flex items-center gap-2">
+      <FormControl
+        label={() => null}
+        caption={() =>
+          state === "error" ? (
+            <span style={{ color: "#ffb4a8" }}>{message}</span>
+          ) : state === "loading" ? (
+            <span className={css({ color: "rgba(215,235,230,0.8)" })}>
+              Checking the list…
               <span
                 aria-hidden
-                className="size-3.5 rounded-full border-2 border-foam/30 border-t-foam animate-spin"
+                className={`animate-shimmer ${css({
+                  display: "inline-block",
+                  marginLeft: "0.5rem",
+                  height: "0.5rem",
+                  width: "6rem",
+                  borderRadius: "999px",
+                  verticalAlign: "middle",
+                  backgroundImage:
+                    "linear-gradient(90deg, rgba(215,235,230,0.15), rgba(215,235,230,0.75), rgba(215,235,230,0.15))",
+                  backgroundSize: "200% 100%",
+                })}`}
               />
-              Joining…
             </span>
           ) : (
-            "Request access"
-          )}
-        </Button>
-      </div>
-
-      <div className="mt-3 min-h-5" aria-live="polite">
-        {state === "loading" && (
-          <p className="text-sm text-mist/80">
-            Checking the list…
-            <span
-              aria-hidden
-              className="ml-2 inline-block h-2 w-24 rounded-full bg-gradient-to-r from-mist/20 via-mist/70 to-mist/20 animate-shimmer align-middle"
+            <span className={css({ color: "rgba(215,235,230,0.7)" })}>
+              No spam. One note when the next cohort opens.
+            </span>
+          )
+        }
+        error={state === "error" ? message : null}
+        overrides={{
+          ControlContainer: { style: { marginBottom: 0 } },
+          Caption: { style: { marginTop: "0.75rem" } },
+        }}
+      >
+        <div
+          className={css({
+            display: "flex",
+            flexDirection: "column",
+            gap: "0.75rem",
+            "@media screen and (min-width: 640px)": {
+              flexDirection: "row",
+              alignItems: "stretch",
+            },
+          })}
+        >
+          <label className="sr-only" htmlFor="waitlist-email">
+            Work email
+          </label>
+          <div className={css({ flex: 1, minWidth: 0 })}>
+            <Input
+              id="waitlist-email"
+              type="email"
+              name="email"
+              autoComplete="email"
+              placeholder="you@studio.com"
+              value={email}
+              disabled={state === "loading"}
+              error={state === "error"}
+              onChange={(event) => {
+                setEmail(event.currentTarget.value);
+                if (state === "error") {
+                  setState("idle");
+                  setMessage("");
+                }
+              }}
+              overrides={{
+                Root: {
+                  style: {
+                    height: "3rem",
+                    boxShadow: "0 16px 40px -28px rgba(6,20,26,0.55)",
+                  },
+                },
+                Input: {
+                  style: {
+                    fontSize: "1rem",
+                    color: brand.ink,
+                    "::placeholder": { color: "rgba(61,92,88,0.7)" },
+                  },
+                },
+              }}
             />
-          </p>
-        )}
-        {state === "error" && (
-          <p className="text-sm text-[#ffb4a8]">{message}</p>
-        )}
-        {state === "idle" && (
-          <p className="text-sm text-mist/70">
-            No spam. One note when the next cohort opens.
-          </p>
-        )}
-      </div>
+          </div>
+          <Button
+            type="submit"
+            isLoading={state === "loading"}
+            disabled={state === "loading"}
+            overrides={{
+              BaseButton: {
+                style: {
+                  height: "3rem",
+                  minWidth: "9.5rem",
+                  fontSize: "1rem",
+                  fontWeight: 650,
+                  whiteSpace: "nowrap",
+                },
+              },
+            }}
+          >
+            Request access
+          </Button>
+        </div>
+      </FormControl>
     </form>
   );
 }

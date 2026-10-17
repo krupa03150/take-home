@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Figtree, Geist_Mono, Syne } from "next/font/google";
+import { Providers } from "@/components/providers";
 import "./globals.css";
 
 const syne = Syne({
@@ -22,7 +23,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Alto — Ship take-homes that feel like products",
   description:
-    "Alto is a polished single-page demo kit for take-home interviews. Brand-first landing, clear craft, zero fluff.",
+    "Alto is a polished single-page demo kit for take-home interviews. Brand-first landing on Uber Base Web.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -31,7 +32,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${syne.variable} ${figtree.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col font-sans">{children}</body>
+      <body className="min-h-full flex flex-col font-sans">
+        <Providers>{children}</Providers>
+      </body>
     </html>
   );
 }

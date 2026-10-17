@@ -10,7 +10,7 @@ const NOTES: Record<string, { title: string; body: string }> = {
   },
   "nav-circle": {
     title: "Why My Circle exists",
-    body: "Familiar faces, the next weekly gathering, and “I’ll be there” as the reconnection loop — saying yes to next week builds a relationship, not a social graph. Engineering: one screen, local state. Business: recurring attendance → retention.",
+    body: "Familiar faces, showing up next week (“I’ll be there”), and a quiet message to someone she already knows — relationship, not a social graph. Engineering: one screen + local threads. Business: recurring attendance → retention.",
   },
   "nav-profile": {
     title: "Why profile shows interests",
@@ -135,8 +135,8 @@ export function HoverNotes() {
             lineHeight: 1.4,
           })}
         >
-          Hover an event card, Chats, or Profile in the phone to see the note
-          here.
+          Hover an event card, My Circle, or Profile in the phone to see the
+          note here.
         </div>
       )}
     </aside>

@@ -87,24 +87,37 @@ export function CommonGroundApp() {
     });
   };
 
-  const handleSignUp = (email: string, password: string): string | null => {
+  const handleSignUp = (input: {
+    name: string;
+    email: string;
+    password: string;
+  }): string | null => {
+    const email = input.email.trim().toLowerCase();
     const existing = loadSession();
     if (
+      email &&
       existing.user &&
-      existing.user.email === email.trim().toLowerCase()
+      existing.user.email &&
+      existing.user.email === email
     ) {
       return "That email already has an account — try signing in.";
     }
-    const user = createEmptyProfile(email, password);
+    const user = createEmptyProfile(email, input.password, input.name);
     setSession((prev) => ({ ...prev, user }));
     go("setup");
     return null;
   };
 
+  const handleContinueWithoutAccount = (name: string) => {
+    const user = createEmptyProfile("", "", name.trim() || "Friend");
+    setSession((prev) => ({ ...prev, user }));
+    go("setup");
+  };
+
   const handleSignIn = (email: string, password: string): string | null => {
     const existing = loadSession();
-    if (!existing.user) {
-      return "No local account yet — create one with Sign up.";
+    if (!existing.user || !existing.user.email) {
+      return "No saved account on this phone yet — continue without an account, or sign up with an optional email.";
     }
     if (existing.user.email !== email.trim().toLowerCase()) {
       return "No account for that email on this device.";
@@ -333,6 +346,7 @@ export function CommonGroundApp() {
                   onBack={() => go("landing")}
                   onSignUp={handleSignUp}
                   onSignIn={handleSignIn}
+                  onContinueWithoutAccount={handleContinueWithoutAccount}
                 />
               )}
               {screen === "setup" && session.user && (

@@ -76,11 +76,12 @@ export function clearSession() {
 export function createEmptyProfile(
   email: string,
   password: string,
+  name = "",
 ): UserProfile {
   return {
     email: email.trim().toLowerCase(),
     password,
-    name: "",
+    name: name.trim(),
     age: "",
     hobby: "",
     interests: [],

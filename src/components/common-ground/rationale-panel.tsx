@@ -24,7 +24,7 @@ const features = [
   },
   {
     title: "My Circle",
-    why: "Familiar faces + next weekly gathering + “I’ll be there.” Assumption: saying yes to next week builds a relationship, not a social graph. Engineering: one screen, local state. Business: recurring attendance → retention.",
+    why: "Familiar faces + next weekly gathering + “I’ll be there,” plus a quiet Message to someone she knows. Assumption: showing up and a short follow-up build a relationship, not a social graph. Engineering: one tab, local threads. Business: recurring attendance → retention.",
   },
   {
     title: "Profile + interests",

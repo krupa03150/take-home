@@ -122,6 +122,8 @@ export function Field({
   autoComplete,
   inputMode,
   placeholder,
+  hint,
+  optional,
 }: {
   label: string;
   id: string;
@@ -131,25 +133,54 @@ export function Field({
   autoComplete?: string;
   inputMode?: "text" | "email" | "numeric";
   placeholder?: string;
+  /** Visible helper — not placeholder-only. */
+  hint?: string;
+  optional?: boolean;
 }) {
   const [css, theme] = useStyletron();
+  const hintId = hint ? `${id}-hint` : undefined;
   return (
-    <label
-      htmlFor={id}
+    <div
       className={css({
         display: "grid",
         gap: "6px",
       })}
     >
-      <span
+      <label
+        htmlFor={id}
         className={css({
-          fontSize: "14px",
+          fontSize: "16px",
           fontWeight: 700,
-          color: theme.colors.contentSecondary,
+          color: theme.colors.contentPrimary,
         })}
       >
         {label}
-      </span>
+        {optional ? (
+          <span
+            className={css({
+              marginLeft: "8px",
+              fontSize: "15px",
+              fontWeight: 600,
+              color: theme.colors.contentTertiary,
+            })}
+          >
+            Optional
+          </span>
+        ) : null}
+      </label>
+      {hint ? (
+        <p
+          id={hintId}
+          className={css({
+            margin: 0,
+            fontSize: "17px",
+            lineHeight: 1.4,
+            color: theme.colors.contentSecondary,
+          })}
+        >
+          {hint}
+        </p>
+      ) : null}
       <input
         id={id}
         type={type}
@@ -157,14 +188,15 @@ export function Field({
         autoComplete={autoComplete}
         inputMode={inputMode}
         placeholder={placeholder}
+        aria-describedby={hintId}
         onChange={(e) => onChange(e.target.value)}
         className={css({
-          minHeight: "48px",
+          minHeight: "52px",
           borderRadius: "12px",
           border: `1.5px solid ${theme.colors.borderOpaque}`,
           backgroundColor: theme.colors.backgroundPrimary,
           color: theme.colors.contentPrimary,
-          fontSize: "17px",
+          fontSize: "18px",
           paddingLeft: "14px",
           paddingRight: "14px",
           fontFamily: theme.typography.ParagraphMedium.fontFamily,
@@ -175,7 +207,81 @@ export function Field({
           },
         })}
       />
-    </label>
+    </div>
+  );
+}
+
+/** Side-by-side Skip + Continue row; both ≥44px tall. */
+export function ActionRow({
+  skipLabel,
+  onSkip,
+  continueLabel,
+  onContinue,
+  continueType = "button",
+  continueLoading,
+}: {
+  skipLabel: string;
+  onSkip: () => void;
+  continueLabel: string;
+  onContinue?: () => void;
+  continueType?: "button" | "submit";
+  continueLoading?: boolean;
+}) {
+  const [css, theme] = useStyletron();
+  return (
+    <div
+      className={css({
+        display: "grid",
+        gridTemplateColumns: "1fr 1.2fr",
+        gap: "10px",
+        marginTop: "4px",
+      })}
+    >
+      <button
+        type="button"
+        onClick={onSkip}
+        className={css({
+          minHeight: "52px",
+          borderRadius: "14px",
+          border: `1.5px solid ${theme.colors.borderOpaque}`,
+          backgroundColor: theme.colors.backgroundPrimary,
+          color: theme.colors.contentPrimary,
+          fontSize: "17px",
+          fontWeight: 700,
+          fontFamily: theme.typography.LabelLarge.fontFamily,
+          cursor: "pointer",
+          ":focus-visible": {
+            outline: `2px solid ${theme.colors.accent}`,
+            outlineOffset: "2px",
+          },
+        })}
+      >
+        {skipLabel}
+      </button>
+      <button
+        type={continueType}
+        onClick={onContinue}
+        disabled={continueLoading}
+        className={css({
+          minHeight: "52px",
+          border: "none",
+          borderRadius: "14px",
+          backgroundColor: theme.colors.brandBackgroundPrimary,
+          color: theme.colors.brandContentOnPrimary,
+          fontSize: "17px",
+          fontWeight: 700,
+          fontFamily: theme.typography.LabelLarge.fontFamily,
+          cursor: continueLoading ? "not-allowed" : "pointer",
+          opacity: continueLoading ? 0.55 : 1,
+          ":focus-visible": {
+            outline: `2px solid ${theme.colors.accent}`,
+            outlineOffset: "2px",
+          },
+        })}
+      >
+        {continueLoading ? "Working…" : continueLabel}
+      </button>
+    </div>
   );
 }
 

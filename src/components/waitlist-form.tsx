@@ -4,7 +4,6 @@ import { useState, type FormEvent } from "react";
 import { useStyletron } from "baseui";
 import { Block } from "baseui/block";
 import { Button, KIND, SIZE } from "baseui/button";
-import { FormControl } from "baseui/form-control";
 import { Input } from "baseui/input";
 import { brand } from "@/lib/theme";
 
@@ -82,6 +81,13 @@ export function WaitlistForm() {
     );
   }
 
+  const caption =
+    state === "error"
+      ? message
+      : state === "loading"
+        ? "Checking the list…"
+        : "No spam. One note when the next cohort opens.";
+
   return (
     <form
       onSubmit={onSubmit}
@@ -89,91 +95,85 @@ export function WaitlistForm() {
       className={css({ width: "100%", maxWidth: "28rem" })}
       data-baseweb-form="waitlist"
     >
-      <FormControl
-        label="Work email"
-        caption={
-          state === "loading"
-            ? "Checking the list…"
-            : "No spam. One note when the next cohort opens."
-        }
-        error={state === "error" ? message : null}
+      <Block
+        as="label"
+        htmlFor="waitlist-email"
+        font="LabelMedium"
+        color={brand.foam}
+        marginBottom="scale300"
+        display="block"
+      >
+        Work email
+      </Block>
+      <Block
+        display="flex"
+        flexDirection="column"
         overrides={{
-          Label: {
+          Block: {
             style: {
-              color: brand.foam,
-            },
-          },
-          Caption: {
-            style: {
-              color:
-                state === "error"
-                  ? "#ffb4a8"
-                  : "rgba(215,235,230,0.75)",
+              gap: "0.75rem",
+              "@media screen and (min-width: 640px)": {
+                flexDirection: "row",
+                alignItems: "stretch",
+              },
             },
           },
         }}
       >
-        <Block
-          display="flex"
-          flexDirection="column"
-          overrides={{
-            Block: {
-              style: {
-                gap: "0.75rem",
-                "@media screen and (min-width: 640px)": {
-                  flexDirection: "row",
-                  alignItems: "stretch",
+        <Block flex="1" minWidth="0">
+          <Input
+            id="waitlist-email"
+            type="email"
+            name="email"
+            autoComplete="email"
+            placeholder="you@studio.com"
+            value={email}
+            disabled={state === "loading"}
+            error={state === "error"}
+            aria-describedby="waitlist-caption"
+            onChange={(event) => {
+              setEmail(event.currentTarget.value);
+              if (state === "error") {
+                setState("idle");
+                setMessage("");
+              }
+            }}
+            overrides={{
+              Root: {
+                style: {
+                  height: "3rem",
                 },
+              },
+            }}
+          />
+        </Block>
+        <Button
+          type="submit"
+          kind={KIND.primary}
+          size={SIZE.large}
+          isLoading={state === "loading"}
+          disabled={state === "loading"}
+          overrides={{
+            BaseButton: {
+              style: {
+                minWidth: "9.5rem",
+                whiteSpace: "nowrap",
               },
             },
           }}
         >
-          <Block flex="1" minWidth="0">
-            <Input
-              id="waitlist-email"
-              type="email"
-              name="email"
-              autoComplete="email"
-              placeholder="you@studio.com"
-              value={email}
-              disabled={state === "loading"}
-              error={state === "error"}
-              clearOnEscape
-              onChange={(event) => {
-                setEmail(event.currentTarget.value);
-                if (state === "error") {
-                  setState("idle");
-                  setMessage("");
-                }
-              }}
-              overrides={{
-                Root: {
-                  style: {
-                    height: "3rem",
-                  },
-                },
-              }}
-            />
-          </Block>
-          <Button
-            type="submit"
-            kind={KIND.primary}
-            size={SIZE.large}
-            isLoading={state === "loading"}
-            disabled={state === "loading"}
-            overrides={{
-              BaseButton: {
-                style: {
-                  minWidth: "9.5rem",
-                  whiteSpace: "nowrap",
-                },
-              },
-            }}
-          >
-            Request access
-          </Button>
-        </Block>
-      </FormControl>
+          Request access
+        </Button>
+      </Block>
+      <Block
+        id="waitlist-caption"
+        font="ParagraphSmall"
+        marginTop="scale300"
+        color={state === "error" ? "#ffb4a8" : "rgba(215,235,230,0.75)"}
+        overrides={{ Block: { props: { "aria-live": "polite" } } }}
+      >
+        {caption}
+      </Block>
     </form>
   );
 }

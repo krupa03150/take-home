@@ -2,7 +2,7 @@
 
 import { seedEvents, type CommunityEvent } from "@/lib/data";
 
-const STORAGE_KEY = "common-ground-v3";
+const STORAGE_KEY = "common-ground-v4";
 
 export type UserProfile = {
   email: string;

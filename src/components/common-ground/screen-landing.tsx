@@ -1,12 +1,7 @@
 "use client";
 
 import { useStyletron } from "baseui";
-import { Heading, HeadingLevel } from "baseui/heading";
-import {
-  PrimaryButton,
-  SecondaryButton,
-  ScreenFrame,
-} from "@/components/common-ground/ui";
+import { LandingFriends } from "@/components/common-ground/landing-friends";
 
 type Props = {
   onSignUp: () => void;
@@ -17,89 +12,136 @@ export function ScreenLanding({ onSignUp, onSignIn }: Props) {
   const [css, theme] = useStyletron();
 
   return (
-    <ScreenFrame tone="brand">
+    <div
+      className={css({
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        position: "relative",
+        overflow: "hidden",
+        backgroundImage:
+          "radial-gradient(120% 80% at 50% -10%, #EDE4F7 0%, #F7F1EA 42%, #FBF7F2 100%)",
+        color: theme.colors.contentPrimary,
+        paddingTop: "calc(20px + env(safe-area-inset-top, 0px))",
+        paddingLeft: "24px",
+        paddingRight: "24px",
+        paddingBottom: "calc(18px + env(safe-area-inset-bottom, 0px))",
+      })}
+    >
       <div
         className={css({
-          minHeight: "100%",
+          flex: 1,
           display: "flex",
           flexDirection: "column",
-          justifyContent: "space-between",
-          gap: "28px",
-          backgroundImage: `radial-gradient(120% 70% at 10% 0%, ${theme.colors.accent200} 0%, transparent 55%)`,
+          minHeight: 0,
         })}
       >
-        <div>
-          <p
+        <div className={css({ marginTop: "12px" })}>
+          <h1
             className={css({
-              margin: "8px 0 0",
-              fontSize: "13px",
+              margin: 0,
+              fontSize: "42px",
+              lineHeight: 1.05,
               fontWeight: 700,
-              letterSpacing: "0.08em",
-              textTransform: "uppercase",
-              color: theme.colors.accent600,
+              letterSpacing: "-0.03em",
+              color: theme.colors.contentPrimary,
+              fontFamily: theme.typography.HeadingLarge.fontFamily,
             })}
           >
-            Common Ground
-          </p>
-          <HeadingLevel>
-            <Heading
-              styleLevel={2}
-              color="contentPrimary"
-              className={css({
-                marginTop: "14px !important",
-                marginBottom: "0 !important",
-                color: `${theme.colors.contentPrimary}`,
-              })}
-            >
-              Show up again next week.
-            </Heading>
-          </HeadingLevel>
+            Common
+            <br />
+            Ground
+          </h1>
           <p
             className={css({
-              margin: "14px 0 0",
-              fontSize: "18px",
-              lineHeight: 1.45,
+              margin: "16px 0 0",
+              fontSize: "19px",
+              lineHeight: 1.4,
               color: theme.colors.contentSecondary,
-              maxWidth: "20rem",
+              maxWidth: "18rem",
+              fontWeight: 500,
             })}
           >
-            Virtual community events where familiar faces make belonging feel
-            easier — not one-off rooms that reset every time.
+            Virtual gatherings with people who share what you love.
           </p>
         </div>
 
         <div
-          aria-hidden
           className={css({
             flex: 1,
-            minHeight: "160px",
-            borderRadius: "20px",
-            backgroundImage: `linear-gradient(155deg, ${theme.colors.accent600} 0%, ${theme.colors.accent300} 55%, ${theme.colors.accent100} 100%)`,
+            minHeight: "140px",
             display: "flex",
             alignItems: "flex-end",
-            padding: "18px",
+            justifyContent: "center",
+            marginTop: "8px",
+            marginBottom: "8px",
           })}
         >
-          <p
+          <LandingFriends
             className={css({
-              margin: 0,
-              color: theme.colors.contentInversePrimary,
-              fontSize: "16px",
-              lineHeight: 1.4,
-              fontWeight: 600,
-              maxWidth: "16rem",
+              width: "100%",
+              maxWidth: "360px",
+              height: "auto",
+              display: "block",
             })}
-          >
-            Bake, walk, listen, repair — together, on a call that knows your
-            name.
-          </p>
+          />
         </div>
 
-        <div className={css({ display: "grid", gap: "12px" })}>
-          <PrimaryButton onClick={onSignUp}>Sign up</PrimaryButton>
-          <SecondaryButton onClick={onSignIn}>Sign in</SecondaryButton>
+        <div
+          className={css({
+            display: "grid",
+            gap: "10px",
+            paddingBottom: "4px",
+          })}
+        >
+          <button
+            type="button"
+            onClick={onSignUp}
+            className={css({
+              width: "100%",
+              minHeight: "56px",
+              border: "none",
+              borderRadius: "999px",
+              backgroundColor: "#2F6F5E",
+              color: "#FFFBF5",
+              fontSize: "18px",
+              fontWeight: 700,
+              fontFamily: theme.typography.LabelLarge.fontFamily,
+              cursor: "pointer",
+              boxShadow: "0 10px 24px rgba(47, 111, 94, 0.28)",
+              ":focus-visible": {
+                outline: `3px solid ${theme.colors.accent300}`,
+                outlineOffset: "2px",
+              },
+            })}
+          >
+            Sign up
+          </button>
+          <button
+            type="button"
+            onClick={onSignIn}
+            className={css({
+              width: "100%",
+              minHeight: "56px",
+              borderRadius: "999px",
+              border: "1.5px solid rgba(42, 36, 32, 0.14)",
+              backgroundColor: "rgba(255, 251, 245, 0.85)",
+              color: theme.colors.contentPrimary,
+              fontSize: "18px",
+              fontWeight: 700,
+              fontFamily: theme.typography.LabelLarge.fontFamily,
+              cursor: "pointer",
+              backdropFilter: "blur(6px)",
+              ":focus-visible": {
+                outline: `3px solid ${theme.colors.accent300}`,
+                outlineOffset: "2px",
+              },
+            })}
+          >
+            Sign in
+          </button>
         </div>
       </div>
-    </ScreenFrame>
+    </div>
   );
 }

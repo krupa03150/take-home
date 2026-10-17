@@ -8,7 +8,7 @@ const copy: Partial<Record<AppScreen, { title: string; body: string }[]>> = {
   landing: [
     {
       title: "One job: start",
-      body: "Discoverability is obvious; onboarding hurdles stay few. Sign up or sign in — that’s the only job on the first screen.",
+      body: "Warm, airy first screen — big name, short promise, Sign up / Sign in. Low hurdle, familiar feel.",
     },
   ],
   auth: [
@@ -25,12 +25,12 @@ const copy: Partial<Record<AppScreen, { title: string; body: string }[]>> = {
   ],
   feed: [
     {
-      title: "Today / Tomorrow + photos",
-      body: "Relative dates match how she plans. Photos make the activity recognizable before she commits.",
+      title: "Her interests on top",
+      body: "Chips are what she picked in setup — gardening, reading, cooking — so the feed starts from what she cares about.",
     },
     {
-      title: "Interest filter — trip removed",
-      body: "Filter by what she wants. Activities lean 65+ because mobility removed the trip — the event still has to feel like hers.",
+      title: "Dates in the filter",
+      body: "Funnel opens Today / Tomorrow / weekend. Photos keep activities recognizable; travel is already removed.",
     },
   ],
   event: [

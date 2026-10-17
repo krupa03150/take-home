@@ -24,6 +24,7 @@ export type Friend = {
 
 export const INTEREST_OPTIONS = [
   "Baking",
+  "Cooking",
   "Birding",
   "Storytelling",
   "Making",
@@ -170,6 +171,24 @@ export const seedEvents: CommunityEvent[] = [
       "Join from your kitchen — apron optional.",
       "One shared recipe, then side projects.",
       "Nobody grades your crumbs.",
+    ],
+  },
+  {
+    id: "soup-swap",
+    title: "Weeknight Soup Swap",
+    host: "Helen Park",
+    dayOffset: 2,
+    timeLabel: "5:00 PM",
+    duration: "60 min · virtual",
+    interest: "Cooking",
+    description:
+      "One pot on the stove, recipes traded live — comfort food without leaving the kitchen.",
+    attendees: 13,
+    image: "/events/tea.jpg",
+    whatToExpect: [
+      "Show your pot or just listen.",
+      "Simple pantry recipes only.",
+      "Shopping list shared after.",
     ],
   },
   {

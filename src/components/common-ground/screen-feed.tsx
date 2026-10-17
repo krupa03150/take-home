@@ -7,6 +7,7 @@ import {
   INTEREST_OPTIONS,
   buildDateChips,
   formatEventWhen,
+  weekendOffsets,
   type CommunityEvent,
   type DateFilterId,
   DEFAULT_EVENT_IMAGE,
@@ -19,6 +20,9 @@ import {
   ScreenFrame,
 } from "@/components/common-ground/ui";
 
+type InterestChip = "all" | string;
+type DateSelection = "any" | DateFilterId;
+
 type Props = {
   userName: string;
   interests: string[];
@@ -27,6 +31,15 @@ type Props = {
   onOpenEvent: (id: string) => void;
   onCreateEvent: (event: Omit<CommunityEvent, "id" | "attendees">) => void;
 };
+
+function dayOffsetFromDateId(id: DateFilterId): number {
+  if (id === "today") return 0;
+  if (id === "tomorrow") return 1;
+  if (id === "weekend") return weekendOffsets()[0] ?? 6;
+  const match = /^day-(\d+)$/.exec(id);
+  if (match) return Number(match[1]);
+  return 1;
+}
 
 export function ScreenFeed({
   userName,
@@ -38,64 +51,99 @@ export function ScreenFeed({
 }: Props) {
   const [css, theme] = useStyletron();
   const dateChips = useMemo(() => buildDateChips(), []);
-  const [dateFilter, setDateFilter] = useState<DateFilterId>("today");
-  const [interestFilters, setInterestFilters] = useState<string[]>([]);
+  const interestChips: InterestChip[] = useMemo(
+    () => ["all", ...interests],
+    [interests],
+  );
+
+  const [interestChip, setInterestChip] = useState<InterestChip>("all");
+  const [dateFilter, setDateFilter] = useState<DateSelection>("any");
+  const [draftDate, setDraftDate] = useState<DateSelection>("any");
   const [filterOpen, setFilterOpen] = useState(false);
-  const [draftInterests, setDraftInterests] = useState<string[]>([]);
+
   const [creating, setCreating] = useState(false);
   const [title, setTitle] = useState("");
-  const [when, setWhen] = useState("");
-  const [interest, setInterest] = useState(interests[0] ?? "Baking");
+  const [createInterest, setCreateInterest] = useState(
+    interests[0] ?? "Gardening",
+  );
+  const [createDate, setCreateDate] = useState<DateFilterId>("tomorrow");
   const [description, setDescription] = useState("");
   const [createError, setCreateError] = useState<string | null>(null);
 
-  const activeChip = dateChips.find((c) => c.id === dateFilter) ?? dateChips[0];
+  const activeDateChip =
+    dateFilter === "any"
+      ? null
+      : (dateChips.find((c) => c.id === dateFilter) ?? null);
 
   const visible = useMemo(() => {
     return events
-      .filter((event) => activeChip.match(event))
-      .filter(
-        (event) =>
-          interestFilters.length === 0 ||
-          interestFilters.includes(event.interest),
-      )
+      .filter((event) => {
+        if (interestChip === "all") return true;
+        return event.interest === interestChip;
+      })
+      .filter((event) => {
+        if (dateFilter === "any" || !activeDateChip) return true;
+        return activeDateChip.match(event);
+      })
       .sort((a, b) => {
         const aMatch = interests.includes(a.interest) ? 0 : 1;
         const bMatch = interests.includes(b.interest) ? 0 : 1;
-        if (aMatch !== bMatch) return aMatch - bMatch;
+        if (interestChip === "all" && aMatch !== bMatch) return aMatch - bMatch;
+        if (a.dayOffset !== b.dayOffset) return a.dayOffset - b.dayOffset;
         return a.timeLabel.localeCompare(b.timeLabel);
       });
-  }, [events, activeChip, interestFilters, interests]);
+  }, [events, interestChip, dateFilter, activeDateChip, interests]);
 
-  const openFilters = () => {
-    setDraftInterests(interestFilters);
+  const openDateFilter = () => {
+    setDraftDate(dateFilter);
     setFilterOpen(true);
   };
 
-  const applyFilters = () => {
-    setInterestFilters(draftInterests);
+  const applyDateFilter = () => {
+    setDateFilter(draftDate);
     setFilterOpen(false);
   };
 
-  const clearFilters = () => {
-    setDraftInterests([]);
-    setInterestFilters([]);
+  const clearDateFilter = () => {
+    setDraftDate("any");
+    setDateFilter("any");
     setFilterOpen(false);
+  };
+
+  const openCreate = () => {
+    setCreateError(null);
+    setTitle("");
+    setDescription("");
+    setCreateInterest(interests[0] ?? "Gardening");
+    setCreateDate("tomorrow");
+    setCreating(true);
+  };
+
+  const emptyLabel = () => {
+    const interestLabel =
+      interestChip === "all" ? "your interests" : interestChip.toLowerCase();
+    if (dateFilter === "any") return `No ${interestLabel} events yet`;
+    const day = activeDateChip?.label.toLowerCase() ?? "that day";
+    return `Nothing for ${interestLabel} on ${day}`;
   };
 
   const submitCreate = () => {
     setCreateError(null);
-    if (!title.trim() || !when.trim() || !description.trim()) {
-      setCreateError("Add a title, time, and short description.");
+    if (!title.trim()) {
+      setCreateError("Add a title for your gathering.");
+      return;
+    }
+    if (!description.trim()) {
+      setCreateError("Add a short description.");
       return;
     }
     onCreateEvent({
       title: title.trim(),
       host: userName,
-      dayOffset: 1,
-      timeLabel: when.trim(),
+      dayOffset: dayOffsetFromDateId(createDate),
+      timeLabel: "10:00 AM",
       duration: "60 min · virtual",
-      interest: interest.trim() || "Community",
+      interest: createInterest,
       description: description.trim(),
       image: DEFAULT_EVENT_IMAGE,
       whatToExpect: [
@@ -104,52 +152,117 @@ export function ScreenFeed({
         "Cameras optional after intros.",
       ],
     });
-    setTitle("");
-    setWhen("");
-    setDescription("");
     setCreating(false);
   };
 
+  const chipButton = (active: boolean) =>
+    css({
+      flexShrink: 0,
+      minHeight: "44px",
+      paddingLeft: "14px",
+      paddingRight: "14px",
+      borderRadius: "12px",
+      border: `1.5px solid ${
+        active ? theme.colors.accent : theme.colors.borderOpaque
+      }`,
+      backgroundColor: active
+        ? theme.colors.backgroundAccentLight
+        : theme.colors.backgroundPrimary,
+      color: active ? theme.colors.accent700 : theme.colors.contentPrimary,
+      fontSize: "15px",
+      fontWeight: 700,
+      cursor: "pointer",
+      fontFamily: theme.typography.LabelMedium.fontFamily,
+      whiteSpace: "nowrap",
+      ":focus-visible": {
+        outline: `2px solid ${theme.colors.accent}`,
+        outlineOffset: "2px",
+      },
+    });
+
   return (
     <ScreenFrame>
-      <div>
-        <p
-          className={css({
-            margin: 0,
-            fontSize: "13px",
-            fontWeight: 700,
-            letterSpacing: "0.06em",
-            textTransform: "uppercase",
-            color: theme.colors.accent600,
-          })}
-        >
-          Common Ground
-        </p>
-        <HeadingLevel>
-          <Heading
-            styleLevel={4}
-            color="contentPrimary"
+      <div
+        className={css({
+          display: "flex",
+          alignItems: "flex-start",
+          justifyContent: "space-between",
+          gap: "12px",
+        })}
+      >
+        <div className={css({ minWidth: 0, flex: 1 })}>
+          <p
             className={css({
-              marginTop: "6px !important",
-              marginBottom: "0 !important",
+              margin: 0,
+              fontSize: "13px",
+              fontWeight: 700,
+              letterSpacing: "0.06em",
+              textTransform: "uppercase",
+              color: theme.colors.accent600,
             })}
           >
-            Hi {userName.split(" ")[0]}
-          </Heading>
-        </HeadingLevel>
-        <p
+            Common Ground
+          </p>
+          <HeadingLevel>
+            <Heading
+              styleLevel={4}
+              color="contentPrimary"
+              className={css({
+                marginTop: "6px !important",
+                marginBottom: "0 !important",
+              })}
+            >
+              Hi {userName.split(" ")[0]}
+            </Heading>
+          </HeadingLevel>
+          <p
+            className={css({
+              margin: "6px 0 0",
+              fontSize: "16px",
+              color: theme.colors.contentSecondary,
+              lineHeight: 1.4,
+            })}
+          >
+            Virtual community events matched to what you love.
+          </p>
+        </div>
+
+        <button
+          type="button"
+          aria-label="Create event"
+          onClick={openCreate}
           className={css({
-            margin: "6px 0 0",
-            fontSize: "16px",
-            color: theme.colors.contentSecondary,
-            lineHeight: 1.4,
+            flexShrink: 0,
+            width: "44px",
+            height: "44px",
+            borderRadius: "14px",
+            border: "none",
+            backgroundColor: theme.colors.brandBackgroundPrimary,
+            color: theme.colors.brandContentOnPrimary,
+            cursor: "pointer",
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+            boxShadow: "0 6px 16px rgba(47, 111, 94, 0.28)",
+            ":focus-visible": {
+              outline: `2px solid ${theme.colors.accent}`,
+              outlineOffset: "2px",
+            },
           })}
         >
-          Virtual community events you can join this week.
-        </p>
+          <svg width="22" height="22" viewBox="0 0 22 22" aria-hidden>
+            <path
+              d="M11 4v14M4 11h14"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.4"
+              strokeLinecap="round"
+            />
+          </svg>
+        </button>
       </div>
 
-      {/* Date row + filter */}
+      {/* Interest chips + date filter */}
       <div
         className={css({
           display: "flex",
@@ -161,7 +274,7 @@ export function ScreenFeed({
       >
         <div
           role="tablist"
-          aria-label="Filter by day"
+          aria-label="Filter by interest"
           className={css({
             display: "flex",
             gap: "8px",
@@ -172,42 +285,19 @@ export function ScreenFeed({
             paddingBottom: "2px",
           })}
         >
-          {dateChips.map((chip) => {
-            const active = chip.id === dateFilter;
+          {interestChips.map((chip) => {
+            const active = chip === interestChip;
+            const label = chip === "all" ? "All" : chip;
             return (
               <button
-                key={chip.id}
+                key={chip}
                 type="button"
                 role="tab"
                 aria-selected={active}
-                onClick={() => setDateFilter(chip.id)}
-                className={css({
-                  flexShrink: 0,
-                  minHeight: "44px",
-                  paddingLeft: "14px",
-                  paddingRight: "14px",
-                  borderRadius: "12px",
-                  border: `1.5px solid ${
-                    active ? theme.colors.accent : theme.colors.borderOpaque
-                  }`,
-                  backgroundColor: active
-                    ? theme.colors.backgroundAccentLight
-                    : theme.colors.backgroundPrimary,
-                  color: active
-                    ? theme.colors.accent700
-                    : theme.colors.contentPrimary,
-                  fontSize: "15px",
-                  fontWeight: 700,
-                  cursor: "pointer",
-                  fontFamily: theme.typography.LabelMedium.fontFamily,
-                  whiteSpace: "nowrap",
-                  ":focus-visible": {
-                    outline: `2px solid ${theme.colors.accent}`,
-                    outlineOffset: "2px",
-                  },
-                })}
+                onClick={() => setInterestChip(chip)}
+                className={chipButton(active)}
               >
-                {chip.label}
+                {label}
               </button>
             );
           })}
@@ -216,25 +306,26 @@ export function ScreenFeed({
         <button
           type="button"
           aria-label={
-            interestFilters.length
-              ? `Open filters, ${interestFilters.length} active`
-              : "Open filters"
+            dateFilter === "any"
+              ? "Open date filter"
+              : `Open date filter, ${activeDateChip?.label ?? "active"}`
           }
           aria-expanded={filterOpen}
-          onClick={openFilters}
+          onClick={openDateFilter}
           className={css({
             flexShrink: 0,
             width: "44px",
             height: "44px",
             borderRadius: "12px",
             border: `1.5px solid ${
-              interestFilters.length
+              dateFilter !== "any"
                 ? theme.colors.accent
                 : theme.colors.borderOpaque
             }`,
-            backgroundColor: interestFilters.length
-              ? theme.colors.backgroundAccentLight
-              : theme.colors.backgroundPrimary,
+            backgroundColor:
+              dateFilter !== "any"
+                ? theme.colors.backgroundAccentLight
+                : theme.colors.backgroundPrimary,
             color: theme.colors.contentPrimary,
             cursor: "pointer",
             display: "inline-flex",
@@ -256,7 +347,7 @@ export function ScreenFeed({
               strokeLinejoin="round"
             />
           </svg>
-          {interestFilters.length > 0 && (
+          {dateFilter !== "any" && (
             <span
               className={css({
                 position: "absolute",
@@ -271,6 +362,18 @@ export function ScreenFeed({
           )}
         </button>
       </div>
+
+      {dateFilter !== "any" && activeDateChip && (
+        <p
+          className={css({
+            margin: "-6px 0 12px",
+            fontSize: "14px",
+            color: theme.colors.contentSecondary,
+          })}
+        >
+          Showing {activeDateChip.label.toLowerCase()}
+        </p>
+      )}
 
       {visible.length === 0 ? (
         <div
@@ -290,8 +393,7 @@ export function ScreenFeed({
               color: theme.colors.contentPrimary,
             })}
           >
-            Nothing on {activeChip.label.toLowerCase()}
-            {interestFilters.length ? " for those interests" : ""}
+            {emptyLabel()}
           </p>
           <p
             className={css({
@@ -301,13 +403,13 @@ export function ScreenFeed({
               lineHeight: 1.45,
             })}
           >
-            Try another day, clear your filters, or create a virtual gathering
-            for your community.
+            Try another interest, clear the date filter, or tap + to create a
+            virtual gathering.
           </p>
-          {interestFilters.length > 0 && (
+          {dateFilter !== "any" && (
             <div className={css({ marginTop: "14px" })}>
-              <SecondaryButton onClick={clearFilters}>
-                Clear interest filters
+              <SecondaryButton onClick={clearDateFilter}>
+                Clear date filter
               </SecondaryButton>
             </div>
           )}
@@ -317,7 +419,7 @@ export function ScreenFeed({
           className={css({
             display: "grid",
             gap: "14px",
-            paddingBottom: "12px",
+            paddingBottom: "88px",
           })}
         >
           {visible.map((event) => {
@@ -424,68 +526,181 @@ export function ScreenFeed({
         </div>
       )}
 
-      {!creating ? (
-        <div className={css({ paddingBottom: "88px", marginTop: "8px" })}>
-          <SecondaryButton onClick={() => setCreating(true)}>
-            Create a virtual event
-          </SecondaryButton>
-        </div>
-      ) : (
+      {creating && (
         <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Create event"
           className={css({
-            marginTop: "8px",
-            marginBottom: "88px",
-            padding: "16px",
-            borderRadius: "16px",
-            border: `1px solid ${theme.colors.borderOpaque}`,
-            display: "grid",
-            gap: "12px",
-            backgroundColor: theme.colors.backgroundSecondary,
+            position: "absolute",
+            inset: 0,
+            zIndex: 30,
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "flex-end",
+            backgroundColor: theme.colors.backgroundOverlay,
           })}
         >
-          <p
+          <div
             className={css({
-              margin: 0,
-              fontSize: "16px",
-              fontWeight: 700,
+              backgroundColor: theme.colors.backgroundPrimary,
               color: theme.colors.contentPrimary,
+              borderTopLeftRadius: "20px",
+              borderTopRightRadius: "20px",
+              padding:
+                "20px 20px calc(20px + env(safe-area-inset-bottom, 0px))",
+              maxHeight: "86%",
+              overflowY: "auto",
             })}
           >
-            New virtual event
-          </p>
-          <Field
-            id="cg-ev-title"
-            label="Title"
-            value={title}
-            onChange={setTitle}
-            placeholder="Friday Sketch Night"
-          />
-          <Field
-            id="cg-ev-when"
-            label="Time"
-            value={when}
-            onChange={setWhen}
-            placeholder="7:00 PM"
-          />
-          <Field
-            id="cg-ev-interest"
-            label="Interest"
-            value={interest}
-            onChange={setInterest}
-            placeholder="Making"
-          />
-          <Field
-            id="cg-ev-desc"
-            label="Description"
-            value={description}
-            onChange={setDescription}
-            placeholder="Quiet drawing hour with optional share-out."
-          />
-          <ErrorText>{createError}</ErrorText>
-          <PrimaryButton onClick={submitCreate}>Publish locally</PrimaryButton>
-          <SecondaryButton onClick={() => setCreating(false)}>
-            Cancel
-          </SecondaryButton>
+            <div
+              className={css({
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                gap: "12px",
+              })}
+            >
+              <h2
+                className={css({
+                  margin: 0,
+                  fontSize: "20px",
+                  fontWeight: 700,
+                  fontFamily: theme.typography.HeadingXSmall.fontFamily,
+                })}
+              >
+                Create event
+              </h2>
+              <button
+                type="button"
+                aria-label="Close create event"
+                onClick={() => setCreating(false)}
+                className={css({
+                  minHeight: "44px",
+                  minWidth: "44px",
+                  border: "none",
+                  background: "transparent",
+                  fontSize: "22px",
+                  cursor: "pointer",
+                  color: theme.colors.contentPrimary,
+                })}
+              >
+                ×
+              </button>
+            </div>
+            <p
+              className={css({
+                margin: "8px 0 16px",
+                fontSize: "16px",
+                color: theme.colors.contentSecondary,
+                lineHeight: 1.4,
+              })}
+            >
+              Host a virtual gathering — it stays on this device for the demo.
+            </p>
+
+            <div className={css({ display: "grid", gap: "16px" })}>
+              <Field
+                id="cg-ev-title"
+                label="Title"
+                value={title}
+                onChange={setTitle}
+                placeholder="Afternoon tea circle"
+              />
+
+              <fieldset
+                className={css({
+                  margin: 0,
+                  padding: 0,
+                  border: "none",
+                })}
+              >
+                <legend
+                  className={css({
+                    fontSize: "14px",
+                    fontWeight: 700,
+                    color: theme.colors.contentSecondary,
+                    marginBottom: "8px",
+                  })}
+                >
+                  Interest
+                </legend>
+                <div
+                  className={css({
+                    display: "flex",
+                    flexWrap: "wrap",
+                    gap: "8px",
+                  })}
+                >
+                  {INTEREST_OPTIONS.map((option) => (
+                    <button
+                      key={option}
+                      type="button"
+                      aria-pressed={createInterest === option}
+                      onClick={() => setCreateInterest(option)}
+                      className={chipButton(createInterest === option)}
+                    >
+                      {option}
+                    </button>
+                  ))}
+                </div>
+              </fieldset>
+
+              <fieldset
+                className={css({
+                  margin: 0,
+                  padding: 0,
+                  border: "none",
+                })}
+              >
+                <legend
+                  className={css({
+                    fontSize: "14px",
+                    fontWeight: 700,
+                    color: theme.colors.contentSecondary,
+                    marginBottom: "8px",
+                  })}
+                >
+                  Date
+                </legend>
+                <div
+                  className={css({
+                    display: "flex",
+                    flexWrap: "wrap",
+                    gap: "8px",
+                  })}
+                >
+                  {dateChips.map((chip) => (
+                    <button
+                      key={chip.id}
+                      type="button"
+                      aria-pressed={createDate === chip.id}
+                      onClick={() => setCreateDate(chip.id)}
+                      className={chipButton(createDate === chip.id)}
+                    >
+                      {chip.label}
+                    </button>
+                  ))}
+                </div>
+              </fieldset>
+
+              <Field
+                id="cg-ev-desc"
+                label="Short description"
+                value={description}
+                onChange={setDescription}
+                placeholder="What will people do together?"
+              />
+
+              <ErrorText>{createError}</ErrorText>
+              <PrimaryButton onClick={submitCreate}>
+                Publish locally
+              </PrimaryButton>
+              <SecondaryButton onClick={() => setCreating(false)}>
+                Cancel
+              </SecondaryButton>
+            </div>
+          </div>
         </div>
       )}
 
@@ -493,7 +708,7 @@ export function ScreenFeed({
         <div
           role="dialog"
           aria-modal="true"
-          aria-label="Filter events"
+          aria-label="Filter by date"
           className={css({
             position: "absolute",
             inset: 0,
@@ -532,11 +747,11 @@ export function ScreenFeed({
                   fontFamily: theme.typography.HeadingXSmall.fontFamily,
                 })}
               >
-                Filter by interest
+                When do you want to join?
               </h2>
               <button
                 type="button"
-                aria-label="Close filters"
+                aria-label="Close date filter"
                 onClick={() => setFilterOpen(false)}
                 className={css({
                   minHeight: "44px",
@@ -559,7 +774,8 @@ export function ScreenFeed({
                 lineHeight: 1.4,
               })}
             >
-              Choose the activities you want to see. Leave empty to show all.
+              Today, tomorrow, or later this week — leave as any day to see
+              everything.
             </p>
             <div
               className={css({
@@ -568,44 +784,25 @@ export function ScreenFeed({
                 gap: "8px",
               })}
             >
-              {INTEREST_OPTIONS.map((option) => {
-                const active = draftInterests.includes(option);
-                return (
-                  <button
-                    key={option}
-                    type="button"
-                    aria-pressed={active}
-                    onClick={() =>
-                      setDraftInterests((prev) =>
-                        prev.includes(option)
-                          ? prev.filter((i) => i !== option)
-                          : [...prev, option],
-                      )
-                    }
-                    className={css({
-                      minHeight: "44px",
-                      paddingLeft: "14px",
-                      paddingRight: "14px",
-                      borderRadius: "12px",
-                      border: `1.5px solid ${
-                        active ? theme.colors.accent : theme.colors.borderOpaque
-                      }`,
-                      backgroundColor: active
-                        ? theme.colors.backgroundAccentLight
-                        : theme.colors.backgroundPrimary,
-                      color: active
-                        ? theme.colors.accent700
-                        : theme.colors.contentPrimary,
-                      fontSize: "15px",
-                      fontWeight: 600,
-                      cursor: "pointer",
-                      fontFamily: theme.typography.LabelMedium.fontFamily,
-                    })}
-                  >
-                    {option}
-                  </button>
-                );
-              })}
+              <button
+                type="button"
+                aria-pressed={draftDate === "any"}
+                onClick={() => setDraftDate("any")}
+                className={chipButton(draftDate === "any")}
+              >
+                Any day
+              </button>
+              {dateChips.map((chip) => (
+                <button
+                  key={chip.id}
+                  type="button"
+                  aria-pressed={draftDate === chip.id}
+                  onClick={() => setDraftDate(chip.id)}
+                  className={chipButton(draftDate === chip.id)}
+                >
+                  {chip.label}
+                </button>
+              ))}
             </div>
             <div
               className={css({
@@ -614,9 +811,11 @@ export function ScreenFeed({
                 marginTop: "20px",
               })}
             >
-              <PrimaryButton onClick={applyFilters}>Apply filters</PrimaryButton>
-              <SecondaryButton onClick={clearFilters}>
-                Clear all
+              <PrimaryButton onClick={applyDateFilter}>
+                Apply dates
+              </PrimaryButton>
+              <SecondaryButton onClick={clearDateFilter}>
+                Clear dates
               </SecondaryButton>
             </div>
           </div>

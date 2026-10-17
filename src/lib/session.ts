@@ -2,7 +2,7 @@
 
 import { seedEvents, type CommunityEvent } from "@/lib/data";
 
-const STORAGE_KEY = "common-ground-v2";
+const STORAGE_KEY = "common-ground-v3";
 
 export type UserProfile = {
   email: string;
@@ -35,12 +35,17 @@ export function loadSession(): SessionState {
     const raw = window.localStorage.getItem(STORAGE_KEY);
     if (!raw) return defaultState();
     const parsed = JSON.parse(raw) as SessionState;
+    const events =
+      Array.isArray(parsed.events) &&
+      parsed.events.length > 0 &&
+      parsed.events.every(
+        (e) => typeof e.image === "string" && typeof e.dayOffset === "number",
+      )
+        ? parsed.events
+        : seedEvents.map((e) => ({ ...e }));
     return {
       user: parsed.user ?? null,
-      events:
-        Array.isArray(parsed.events) && parsed.events.length > 0
-          ? parsed.events
-          : seedEvents.map((e) => ({ ...e })),
+      events,
     };
   } catch {
     return defaultState();

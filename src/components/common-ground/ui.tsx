@@ -18,6 +18,7 @@ export function ScreenFrame({
         height: "100%",
         overflowY: "auto",
         WebkitOverflowScrolling: "touch",
+        position: "relative",
         backgroundColor:
           tone === "brand"
             ? theme.colors.backgroundAccentLight

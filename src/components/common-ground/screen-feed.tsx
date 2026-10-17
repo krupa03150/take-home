@@ -1,10 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useStyletron } from "baseui";
 import { Heading, HeadingLevel } from "baseui/heading";
-import type { FeedState } from "@/lib/app-nav";
-import type { CommunityEvent } from "@/lib/data";
+import {
+  INTEREST_OPTIONS,
+  buildDateChips,
+  formatEventWhen,
+  type CommunityEvent,
+  type DateFilterId,
+  DEFAULT_EVENT_IMAGE,
+} from "@/lib/data";
 import {
   ErrorText,
   Field,
@@ -18,8 +24,6 @@ type Props = {
   interests: string[];
   events: CommunityEvent[];
   joinedEventIds: string[];
-  feedState: FeedState;
-  onSetFeedState: (state: FeedState) => void;
   onOpenEvent: (id: string) => void;
   onCreateEvent: (event: Omit<CommunityEvent, "id" | "attendees">) => void;
 };
@@ -29,12 +33,15 @@ export function ScreenFeed({
   interests,
   events,
   joinedEventIds,
-  feedState,
-  onSetFeedState,
   onOpenEvent,
   onCreateEvent,
 }: Props) {
   const [css, theme] = useStyletron();
+  const dateChips = useMemo(() => buildDateChips(), []);
+  const [dateFilter, setDateFilter] = useState<DateFilterId>("today");
+  const [interestFilters, setInterestFilters] = useState<string[]>([]);
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [draftInterests, setDraftInterests] = useState<string[]>([]);
   const [creating, setCreating] = useState(false);
   const [title, setTitle] = useState("");
   const [when, setWhen] = useState("");
@@ -42,18 +49,39 @@ export function ScreenFeed({
   const [description, setDescription] = useState("");
   const [createError, setCreateError] = useState<string | null>(null);
 
-  const ranked = [...events].sort((a, b) => {
-    const aMatch = interests.includes(a.interest) ? 0 : 1;
-    const bMatch = interests.includes(b.interest) ? 0 : 1;
-    return aMatch - bMatch;
-  });
+  const activeChip = dateChips.find((c) => c.id === dateFilter) ?? dateChips[0];
 
-  const visible =
-    feedState === "empty"
-      ? []
-      : feedState === "error"
-        ? []
-        : ranked;
+  const visible = useMemo(() => {
+    return events
+      .filter((event) => activeChip.match(event))
+      .filter(
+        (event) =>
+          interestFilters.length === 0 ||
+          interestFilters.includes(event.interest),
+      )
+      .sort((a, b) => {
+        const aMatch = interests.includes(a.interest) ? 0 : 1;
+        const bMatch = interests.includes(b.interest) ? 0 : 1;
+        if (aMatch !== bMatch) return aMatch - bMatch;
+        return a.timeLabel.localeCompare(b.timeLabel);
+      });
+  }, [events, activeChip, interestFilters, interests]);
+
+  const openFilters = () => {
+    setDraftInterests(interestFilters);
+    setFilterOpen(true);
+  };
+
+  const applyFilters = () => {
+    setInterestFilters(draftInterests);
+    setFilterOpen(false);
+  };
+
+  const clearFilters = () => {
+    setDraftInterests([]);
+    setInterestFilters([]);
+    setFilterOpen(false);
+  };
 
   const submitCreate = () => {
     setCreateError(null);
@@ -64,10 +92,12 @@ export function ScreenFeed({
     onCreateEvent({
       title: title.trim(),
       host: userName,
-      when: when.trim(),
+      dayOffset: 1,
+      timeLabel: when.trim(),
       duration: "60 min · virtual",
       interest: interest.trim() || "Community",
       description: description.trim(),
+      image: DEFAULT_EVENT_IMAGE,
       whatToExpect: [
         "Virtual gathering — join from anywhere.",
         "Host opens with a 5-minute welcome.",
@@ -82,149 +112,171 @@ export function ScreenFeed({
 
   return (
     <ScreenFrame>
-      <div
-        className={css({
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "flex-start",
-          gap: "12px",
-          marginBottom: "4px",
-        })}
-      >
-        <div>
-          <p
-            className={css({
-              margin: 0,
-              fontSize: "13px",
-              fontWeight: 700,
-              letterSpacing: "0.06em",
-              textTransform: "uppercase",
-              color: theme.colors.accent600,
-            })}
-          >
-            Common Ground
-          </p>
-          <HeadingLevel>
-            <Heading
-              styleLevel={4}
-              color="contentPrimary"
-              className={css({
-                marginTop: "6px !important",
-                marginBottom: "0 !important",
-              })}
-            >
-              Hi {userName.split(" ")[0]}
-            </Heading>
-          </HeadingLevel>
-          <p
-            className={css({
-              margin: "6px 0 0",
-              fontSize: "16px",
-              color: theme.colors.contentSecondary,
-              lineHeight: 1.4,
-            })}
-          >
-            Virtual community events you can join this week.
-          </p>
-        </div>
-      </div>
-
-      <div
-        role="group"
-        aria-label="Feed edge states"
-        className={css({
-          display: "flex",
-          flexWrap: "wrap",
-          gap: "8px",
-          marginTop: "16px",
-          marginBottom: "16px",
-        })}
-      >
-        {(["ready", "loading", "empty", "error"] as FeedState[]).map((state) => (
-          <button
-            key={state}
-            type="button"
-            onClick={() => onSetFeedState(state)}
-            aria-pressed={feedState === state}
-            className={css({
-              minHeight: "36px",
-              paddingLeft: "12px",
-              paddingRight: "12px",
-              borderRadius: "10px",
-              border: `1px solid ${
-                feedState === state
-                  ? theme.colors.accent
-                  : theme.colors.borderOpaque
-              }`,
-              backgroundColor:
-                feedState === state
-                  ? theme.colors.backgroundAccentLight
-                  : theme.colors.backgroundSecondary,
-              color: theme.colors.contentPrimary,
-              fontSize: "13px",
-              fontWeight: 600,
-              textTransform: "capitalize",
-              cursor: "pointer",
-              fontFamily: theme.typography.LabelMedium.fontFamily,
-            })}
-          >
-            {state}
-          </button>
-        ))}
-      </div>
-
-      {feedState === "loading" && (
-        <div
-          role="status"
-          aria-live="polite"
+      <div>
+        <p
           className={css({
-            display: "grid",
-            gap: "12px",
-            paddingBottom: "80px",
+            margin: 0,
+            fontSize: "13px",
+            fontWeight: 700,
+            letterSpacing: "0.06em",
+            textTransform: "uppercase",
+            color: theme.colors.accent600,
           })}
         >
-          {[0, 1, 2].map((i) => (
-            <div
-              key={i}
+          Common Ground
+        </p>
+        <HeadingLevel>
+          <Heading
+            styleLevel={4}
+            color="contentPrimary"
+            className={css({
+              marginTop: "6px !important",
+              marginBottom: "0 !important",
+            })}
+          >
+            Hi {userName.split(" ")[0]}
+          </Heading>
+        </HeadingLevel>
+        <p
+          className={css({
+            margin: "6px 0 0",
+            fontSize: "16px",
+            color: theme.colors.contentSecondary,
+            lineHeight: 1.4,
+          })}
+        >
+          Virtual community events you can join this week.
+        </p>
+      </div>
+
+      {/* Date row + filter */}
+      <div
+        className={css({
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          marginTop: "18px",
+          marginBottom: "14px",
+        })}
+      >
+        <div
+          role="tablist"
+          aria-label="Filter by day"
+          className={css({
+            display: "flex",
+            gap: "8px",
+            overflowX: "auto",
+            flex: 1,
+            minWidth: 0,
+            WebkitOverflowScrolling: "touch",
+            paddingBottom: "2px",
+          })}
+        >
+          {dateChips.map((chip) => {
+            const active = chip.id === dateFilter;
+            return (
+              <button
+                key={chip.id}
+                type="button"
+                role="tab"
+                aria-selected={active}
+                onClick={() => setDateFilter(chip.id)}
+                className={css({
+                  flexShrink: 0,
+                  minHeight: "44px",
+                  paddingLeft: "14px",
+                  paddingRight: "14px",
+                  borderRadius: "12px",
+                  border: `1.5px solid ${
+                    active ? theme.colors.accent : theme.colors.borderOpaque
+                  }`,
+                  backgroundColor: active
+                    ? theme.colors.backgroundAccentLight
+                    : theme.colors.backgroundPrimary,
+                  color: active
+                    ? theme.colors.accent700
+                    : theme.colors.contentPrimary,
+                  fontSize: "15px",
+                  fontWeight: 700,
+                  cursor: "pointer",
+                  fontFamily: theme.typography.LabelMedium.fontFamily,
+                  whiteSpace: "nowrap",
+                  ":focus-visible": {
+                    outline: `2px solid ${theme.colors.accent}`,
+                    outlineOffset: "2px",
+                  },
+                })}
+              >
+                {chip.label}
+              </button>
+            );
+          })}
+        </div>
+
+        <button
+          type="button"
+          aria-label={
+            interestFilters.length
+              ? `Open filters, ${interestFilters.length} active`
+              : "Open filters"
+          }
+          aria-expanded={filterOpen}
+          onClick={openFilters}
+          className={css({
+            flexShrink: 0,
+            width: "44px",
+            height: "44px",
+            borderRadius: "12px",
+            border: `1.5px solid ${
+              interestFilters.length
+                ? theme.colors.accent
+                : theme.colors.borderOpaque
+            }`,
+            backgroundColor: interestFilters.length
+              ? theme.colors.backgroundAccentLight
+              : theme.colors.backgroundPrimary,
+            color: theme.colors.contentPrimary,
+            cursor: "pointer",
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+            position: "relative",
+            ":focus-visible": {
+              outline: `2px solid ${theme.colors.accent}`,
+              outlineOffset: "2px",
+            },
+          })}
+        >
+          <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden>
+            <path
+              d="M3 5h14l-5.5 6.2V15l-3 1.5v-5.3L3 5Z"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinejoin="round"
+            />
+          </svg>
+          {interestFilters.length > 0 && (
+            <span
               className={css({
-                height: "110px",
-                borderRadius: "16px",
-                backgroundColor: theme.colors.backgroundSecondary,
-                animationDuration: "1.2s",
-                animationIterationCount: "infinite",
-                animationDirection: "alternate",
-                animationName: "cg-pulse",
+                position: "absolute",
+                top: "6px",
+                right: "6px",
+                width: "8px",
+                height: "8px",
+                borderRadius: "50%",
+                backgroundColor: theme.colors.accent,
               })}
             />
-          ))}
-          <span className="sr-only">Loading events</span>
-        </div>
-      )}
+          )}
+        </button>
+      </div>
 
-      {feedState === "error" && (
+      {visible.length === 0 ? (
         <div
+          role="status"
           className={css({
-            padding: "20px",
-            borderRadius: "16px",
-            backgroundColor: theme.colors.backgroundSecondary,
-            marginBottom: "16px",
-          })}
-        >
-          <ErrorText>
-            We couldn’t load the feed. Check your connection and try again.
-          </ErrorText>
-          <div className={css({ marginTop: "14px" })}>
-            <PrimaryButton onClick={() => onSetFeedState("ready")}>
-              Retry
-            </PrimaryButton>
-          </div>
-        </div>
-      )}
-
-      {feedState === "empty" && (
-        <div
-          className={css({
-            padding: "24px 20px",
+            padding: "28px 20px",
             borderRadius: "16px",
             backgroundColor: theme.colors.backgroundSecondary,
             marginBottom: "16px",
@@ -238,7 +290,8 @@ export function ScreenFeed({
               color: theme.colors.contentPrimary,
             })}
           >
-            No events yet
+            Nothing on {activeChip.label.toLowerCase()}
+            {interestFilters.length ? " for those interests" : ""}
           </p>
           <p
             className={css({
@@ -248,17 +301,22 @@ export function ScreenFeed({
               lineHeight: 1.45,
             })}
           >
-            Create a virtual gathering for your interest — others can join from
-            the feed.
+            Try another day, clear your filters, or create a virtual gathering
+            for your community.
           </p>
+          {interestFilters.length > 0 && (
+            <div className={css({ marginTop: "14px" })}>
+              <SecondaryButton onClick={clearFilters}>
+                Clear interest filters
+              </SecondaryButton>
+            </div>
+          )}
         </div>
-      )}
-
-      {feedState === "ready" && (
+      ) : (
         <div
           className={css({
             display: "grid",
-            gap: "12px",
+            gap: "14px",
             paddingBottom: "12px",
           })}
         >
@@ -273,12 +331,12 @@ export function ScreenFeed({
                 className={css({
                   textAlign: "left",
                   border: `1px solid ${theme.colors.borderOpaque}`,
-                  borderRadius: "16px",
-                  padding: "16px",
+                  borderRadius: "18px",
+                  padding: 0,
+                  overflow: "hidden",
                   backgroundColor: theme.colors.backgroundPrimary,
                   color: theme.colors.contentPrimary,
                   cursor: "pointer",
-                  minHeight: "44px",
                   fontFamily: theme.typography.ParagraphMedium.fontFamily,
                   ":focus-visible": {
                     outline: `2px solid ${theme.colors.accent}`,
@@ -288,65 +346,78 @@ export function ScreenFeed({
               >
                 <div
                   className={css({
-                    display: "flex",
-                    justifyContent: "space-between",
-                    gap: "8px",
+                    height: "148px",
+                    backgroundColor: theme.colors.backgroundSecondary,
+                    backgroundImage: `url(${event.image})`,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
                   })}
-                >
-                  <span
+                  role="img"
+                  aria-label=""
+                />
+                <div className={css({ padding: "14px 16px 16px" })}>
+                  <div
                     className={css({
-                      fontSize: "13px",
-                      fontWeight: 700,
-                      color: theme.colors.accent600,
-                      textTransform: "uppercase",
-                      letterSpacing: "0.04em",
+                      display: "flex",
+                      justifyContent: "space-between",
+                      gap: "8px",
                     })}
                   >
-                    {event.interest}
-                    {matched ? " · For you" : ""}
-                  </span>
-                  {joined && (
                     <span
                       className={css({
-                        fontSize: "12px",
+                        fontSize: "13px",
                         fontWeight: 700,
-                        color: theme.colors.accent700,
+                        color: theme.colors.accent600,
+                        textTransform: "uppercase",
+                        letterSpacing: "0.04em",
                       })}
                     >
-                      Joined
+                      {event.interest}
+                      {matched ? " · For you" : ""}
                     </span>
-                  )}
+                    {joined && (
+                      <span
+                        className={css({
+                          fontSize: "12px",
+                          fontWeight: 700,
+                          color: theme.colors.accent700,
+                        })}
+                      >
+                        Joined
+                      </span>
+                    )}
+                  </div>
+                  <p
+                    className={css({
+                      margin: "8px 0 0",
+                      fontSize: "18px",
+                      fontWeight: 700,
+                      color: theme.colors.contentPrimary,
+                      fontFamily: theme.typography.HeadingXSmall.fontFamily,
+                    })}
+                  >
+                    {event.title}
+                  </p>
+                  <p
+                    className={css({
+                      margin: "6px 0 0",
+                      fontSize: "15px",
+                      color: theme.colors.contentSecondary,
+                    })}
+                  >
+                    {formatEventWhen(event)} · {event.duration}
+                  </p>
+                  <p
+                    className={css({
+                      margin: "8px 0 0",
+                      fontSize: "16px",
+                      lineHeight: 1.4,
+                      color: theme.colors.contentSecondary,
+                    })}
+                  >
+                    {event.description}
+                  </p>
                 </div>
-                <p
-                  className={css({
-                    margin: "8px 0 0",
-                    fontSize: "18px",
-                    fontWeight: 700,
-                    color: theme.colors.contentPrimary,
-                    fontFamily: theme.typography.HeadingXSmall.fontFamily,
-                  })}
-                >
-                  {event.title}
-                </p>
-                <p
-                  className={css({
-                    margin: "6px 0 0",
-                    fontSize: "15px",
-                    color: theme.colors.contentSecondary,
-                  })}
-                >
-                  {event.when} · {event.duration}
-                </p>
-                <p
-                  className={css({
-                    margin: "8px 0 0",
-                    fontSize: "16px",
-                    lineHeight: 1.4,
-                    color: theme.colors.contentSecondary,
-                  })}
-                >
-                  {event.description}
-                </p>
               </button>
             );
           })}
@@ -391,10 +462,10 @@ export function ScreenFeed({
           />
           <Field
             id="cg-ev-when"
-            label="When"
+            label="Time"
             value={when}
             onChange={setWhen}
-            placeholder="Fri, Oct 25 · 7:00 PM"
+            placeholder="7:00 PM"
           />
           <Field
             id="cg-ev-interest"
@@ -415,6 +486,140 @@ export function ScreenFeed({
           <SecondaryButton onClick={() => setCreating(false)}>
             Cancel
           </SecondaryButton>
+        </div>
+      )}
+
+      {filterOpen && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Filter events"
+          className={css({
+            position: "absolute",
+            inset: 0,
+            zIndex: 20,
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "flex-end",
+            backgroundColor: theme.colors.backgroundOverlay,
+          })}
+        >
+          <div
+            className={css({
+              backgroundColor: theme.colors.backgroundPrimary,
+              color: theme.colors.contentPrimary,
+              borderTopLeftRadius: "20px",
+              borderTopRightRadius: "20px",
+              padding:
+                "20px 20px calc(20px + env(safe-area-inset-bottom, 0px))",
+              maxHeight: "78%",
+              overflowY: "auto",
+            })}
+          >
+            <div
+              className={css({
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                gap: "12px",
+              })}
+            >
+              <h2
+                className={css({
+                  margin: 0,
+                  fontSize: "20px",
+                  fontWeight: 700,
+                  fontFamily: theme.typography.HeadingXSmall.fontFamily,
+                })}
+              >
+                Filter by interest
+              </h2>
+              <button
+                type="button"
+                aria-label="Close filters"
+                onClick={() => setFilterOpen(false)}
+                className={css({
+                  minHeight: "44px",
+                  minWidth: "44px",
+                  border: "none",
+                  background: "transparent",
+                  fontSize: "22px",
+                  cursor: "pointer",
+                  color: theme.colors.contentPrimary,
+                })}
+              >
+                ×
+              </button>
+            </div>
+            <p
+              className={css({
+                margin: "8px 0 16px",
+                fontSize: "16px",
+                color: theme.colors.contentSecondary,
+                lineHeight: 1.4,
+              })}
+            >
+              Choose the activities you want to see. Leave empty to show all.
+            </p>
+            <div
+              className={css({
+                display: "flex",
+                flexWrap: "wrap",
+                gap: "8px",
+              })}
+            >
+              {INTEREST_OPTIONS.map((option) => {
+                const active = draftInterests.includes(option);
+                return (
+                  <button
+                    key={option}
+                    type="button"
+                    aria-pressed={active}
+                    onClick={() =>
+                      setDraftInterests((prev) =>
+                        prev.includes(option)
+                          ? prev.filter((i) => i !== option)
+                          : [...prev, option],
+                      )
+                    }
+                    className={css({
+                      minHeight: "44px",
+                      paddingLeft: "14px",
+                      paddingRight: "14px",
+                      borderRadius: "12px",
+                      border: `1.5px solid ${
+                        active ? theme.colors.accent : theme.colors.borderOpaque
+                      }`,
+                      backgroundColor: active
+                        ? theme.colors.backgroundAccentLight
+                        : theme.colors.backgroundPrimary,
+                      color: active
+                        ? theme.colors.accent700
+                        : theme.colors.contentPrimary,
+                      fontSize: "15px",
+                      fontWeight: 600,
+                      cursor: "pointer",
+                      fontFamily: theme.typography.LabelMedium.fontFamily,
+                    })}
+                  >
+                    {option}
+                  </button>
+                );
+              })}
+            </div>
+            <div
+              className={css({
+                display: "grid",
+                gap: "10px",
+                marginTop: "20px",
+              })}
+            >
+              <PrimaryButton onClick={applyFilters}>Apply filters</PrimaryButton>
+              <SecondaryButton onClick={clearFilters}>
+                Clear all
+              </SecondaryButton>
+            </div>
+          </div>
         </div>
       )}
     </ScreenFrame>

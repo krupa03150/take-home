@@ -24,12 +24,12 @@ const copy: Partial<Record<AppScreen, { title: string; body: string }[]>> = {
   ],
   feed: [
     {
-      title: "Virtual events",
-      body: "Seeded locally; reviewers can create new events that persist on this device.",
+      title: "Photo cards + day filters",
+      body: "Every event shows a photo. Today / Tomorrow / weekday / This weekend filter the feed; the funnel opens interest filters.",
     },
     {
-      title: "Edge states",
-      body: "Ready / Loading / Empty / Error chips prove resilience without leaving the phone.",
+      title: "65+ welcoming catalog",
+      body: "Walks, baking, book club, repair, music, gardening, memoir, chair yoga, and more — all virtual and local.",
     },
   ],
   event: [

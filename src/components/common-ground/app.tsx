@@ -7,7 +7,6 @@ import {
   showsBottomNav,
   type AppScreen,
   type AuthMode,
-  type FeedState,
 } from "@/lib/app-nav";
 import { seedFriends, type CommunityEvent } from "@/lib/data";
 import {
@@ -44,7 +43,6 @@ export function CommonGroundApp() {
   const [screen, setScreen] = useState<AppScreen>("landing");
   const [authMode, setAuthMode] = useState<AuthMode>("signup");
   const [eventId, setEventId] = useState<string | null>(null);
-  const [feedState, setFeedState] = useState<FeedState>("ready");
   const [joining, setJoining] = useState(false);
   const [joinError, setJoinError] = useState<string | null>(null);
 
@@ -312,8 +310,6 @@ export function CommonGroundApp() {
                   interests={session.user.interests}
                   events={session.events}
                   joinedEventIds={session.user.joinedEventIds}
-                  feedState={feedState}
-                  onSetFeedState={setFeedState}
                   onOpenEvent={(id) => {
                     setEventId(id);
                     setJoinError(null);

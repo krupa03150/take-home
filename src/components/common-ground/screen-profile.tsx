@@ -2,7 +2,11 @@
 
 import { useStyletron } from "baseui";
 import { Heading, HeadingLevel } from "baseui/heading";
-import type { CommunityEvent, Friend } from "@/lib/data";
+import {
+  formatEventWhen,
+  type CommunityEvent,
+  type Friend,
+} from "@/lib/data";
 import type { UserProfile } from "@/lib/session";
 import { SecondaryButton, ScreenFrame } from "@/components/common-ground/ui";
 
@@ -248,7 +252,7 @@ export function ScreenProfile({
                       color: theme.colors.contentSecondary,
                     })}
                   >
-                    {event.when}
+                    {formatEventWhen(event)}
                   </span>
                 </button>
               </li>

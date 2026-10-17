@@ -2,8 +2,8 @@
 
 import { useStyletron } from "baseui";
 import { Heading, HeadingLevel } from "baseui/heading";
-import type { CommunityEvent } from "@/lib/data";
-import { PrimaryButton, ScreenFrame } from "@/components/common-ground/ui";
+import { formatEventWhen, type CommunityEvent } from "@/lib/data";
+import { PrimaryButton } from "@/components/common-ground/ui";
 
 type Props = {
   event: CommunityEvent;
@@ -47,8 +47,11 @@ export function ScreenEvent({
       >
         <div
           className={css({
-            height: "148px",
-            backgroundImage: `linear-gradient(145deg, ${theme.colors.accent600} 0%, ${theme.colors.accent300} 55%, ${theme.colors.accent100} 100%)`,
+            height: "188px",
+            backgroundColor: theme.colors.backgroundSecondary,
+            backgroundImage: `linear-gradient(180deg, rgba(26,22,19,0.15), rgba(26,22,19,0.35)), url(${event.image})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
             paddingTop: "calc(10px + env(safe-area-inset-top, 0px))",
             paddingLeft: "12px",
             paddingRight: "12px",
@@ -145,7 +148,7 @@ export function ScreenEvent({
                 color: theme.colors.contentPrimary,
               })}
             >
-              {event.when}
+              {formatEventWhen(event)}
             </p>
             <p
               className={css({
